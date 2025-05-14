@@ -50,14 +50,20 @@ body {
 
 .date-container .date {
     font-size: 24px;
-    color: #0fc7f5;
+    color: #46f700;
 }
 
 .block {
     background: rgba(0, 194, 243, 0.952);
     padding: 20px 30px;
     border-radius: 12px;
-    font-size: 2.5rem;
+    font-size: 2.5rem;console.log('Clock container styles loaded.');
+console.log('Clock styles loaded.');
+console.log('Date container styles loaded.');
+console.log('Date styles loaded.');
+console.log('Block styles loaded.');
+console.log('Colon styles loaded.');
+console.log('Block animation styles loaded.');
     min-width: 70px;
     text-align: center;
     transition: transform 0.5s ease, opacity 0.5s ease;
