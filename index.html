@@ -8,20 +8,21 @@
 </head>
 <body>
     <div class="clock-container">
-        <div class="clock">
+        <div class="clock" aria-label="Digital clock">
             <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
         </div>
     </div>
 
     <!-- Date container below the clock -->
-    <div class="date-container"><br>
-        <div class="date">
-            <div class="date" id="dateDisplay">
-                <!-- JavaScript will insert: "Tuesday, 13/05/2025" -->
-            </div>
-            
+    <div class="date-container">
+        <div id="dateDisplay">
+            <!-- JavaScript will insert: "Tuesday, 13/05/2025" -->
         </div>
     </div>
+
+    <noscript>
+        <p>Please enable JavaScript to view the clock.</p>
+    </noscript>
 
     <script src="script.js"></script>
 </body>
