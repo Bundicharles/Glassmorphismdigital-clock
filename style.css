@@ -7,8 +7,8 @@
   }
   
   body {
-    background: linear-gradient(135deg, #1f1c2c, #928dab);
-    color: #ffffff;
+    background: linear-gradient(to bottom, #1f1c2c, #928dab);
+    color: #00ff99;
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -20,11 +20,11 @@
   .main-container {
     width: 100%;
     max-width: 800px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 20px #00ff99;
   }
   
   /* Clock Styles */
@@ -42,28 +42,38 @@
   }
   
   .block {
-    padding: 0 10px;
+    background: #0a0a2a;
+    padding: 0.4em 0.8em;
+    border-radius: 10px;
+    margin: 0 0.3em;
+    color: #00aaff;
     font-weight: bold;
   }
   
   .colon {
-    padding: 0 5px;
+    color: #ffffff;
   }
   
-  /* Date */
+  /* Date Display */
   .date-container {
     text-align: center;
     margin-bottom: 1rem;
   }
   
-  .date {
+  #dateDisplay {
+    background: #000;
+    padding: 0.5em 1em;
+    border-radius: 12px;
     font-size: 1.2rem;
-    color: #ffffff;
+    color: #00ff66;
+    box-shadow: 0 0 10px #00ff66;
+    display: inline-block;
   }
   
   /* Diary */
-  .diary-container {
+  .diary-container h2 {
     margin-top: 1.5rem;
+    color: #ffffff;
   }
   
   textarea {
@@ -74,98 +84,97 @@
     border: none;
     resize: none;
     font-size: 1rem;
-    background: rgba(255, 255, 255, 0.15);
-    color: #ffffff;
+    background: #00111a;
+    color: #00ff66;
     margin-bottom: 0.5rem;
   }
   
   textarea::placeholder {
-    color: #ddd;
+    color: #44ffbb;
   }
   
   button {
     padding: 0.5rem 1.2rem;
-    background: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+    background: #222;
+    color: #00ffcc;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     margin-right: 0.5rem;
-    margin-bottom: 1rem;
+    margin-top: 0.5rem;
     transition: background 0.3s ease;
   }
   
   button:hover {
-    background: rgba(255, 255, 255, 0.4);
+    background: #00ffaa;
+    color: #000;
   }
   
   #savedStatus {
     color: lightgreen;
     font-size: 0.9rem;
-    margin-top: -0.5rem;
-    margin-bottom: 1rem;
+    margin-top: 0.5rem;
   }
   
-  /* Filter and History Controls */
+  /* Filter Controls */
   .history-controls {
+    margin-top: 1rem;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1rem;
     align-items: center;
   }
   
-  .history-controls label,
-  .history-controls input,
-  .history-controls button {
-    color: #ffffff;
-    font-size: 0.95rem;
-  }
-  
   .history-controls input[type="date"] {
-    padding: 0.4rem 0.6rem;
+    padding: 0.4rem;
     border-radius: 6px;
     border: none;
-    background: rgba(255, 255, 255, 0.15);
-    color: #ffffff;
+    background: #00111a;
+    color: #00ffcc;
   }
   
-  /* Notes History Display */
+  /* Notes History Section */
   #notesHistory {
+    margin-top: 1rem;
+    background: #1a1a1a;
+    padding: 1rem;
+    border-radius: 12px;
     max-height: 300px;
     overflow-y: auto;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
   }
   
   .note-item {
-    margin-bottom: 1rem;
+    background: #2b2b2b;
     padding: 0.8rem;
-    background: rgba(255, 255, 255, 0.12);
-    border-left: 4px solid #00ffc3;
-    border-radius: 8px;
+    border-left: 5px solid #00ffcc;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    color: #ffffff;
+  }
+  
+  .note-item strong {
+    color: #00ff99;
   }
   
   .note-item p {
-    margin-top: 0.4rem;
-    font-size: 0.95rem;
+    margin: 0.5rem 0;
+    white-space: pre-wrap;
   }
   
   .note-item button {
-    margin-top: 0.5rem;
-    padding: 0.3rem 0.7rem;
+    background: #ff3333;
+    color: white;
     font-size: 0.8rem;
-    background: rgba(255, 0, 0, 0.4);
+    padding: 0.3rem 0.6rem;
   }
   
   .note-item button:hover {
-    background: rgba(255, 0, 0, 0.6);
+    background: #ff5555;
   }
   
-  /* Future Event Inputs */
+  /* Future Event Input Section (Optional) */
   .future-event-section {
-    margin-top: 1.5rem;
+    margin-top: 2rem;
   }
   
   .future-event-section input[type="date"],
@@ -174,7 +183,7 @@
     border: none;
     border-radius: 6px;
     margin-right: 0.5rem;
-    background: rgba(255, 255, 255, 0.15);
-    color: #ffffff;
+    background: #00111a;
+    color: #00ffcc;
   }
   
