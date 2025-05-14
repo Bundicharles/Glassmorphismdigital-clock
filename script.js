@@ -23,11 +23,28 @@ function animateIfChanged(id, newValue) {
     const el = document.getElementById(id);
     if (el.textContent !== newValue) {
         el.classList.remove("animate");
-        void el.offsetWidth; // reflow
+        void el.offsetWidth; // reflow trick
         el.textContent = newValue;
         el.classList.add("animate");
     }
 }
 
+function saveDiary() {
+    const note = document.getElementById("diaryInput").value;
+    localStorage.setItem("dailyNote", note);
+    document.getElementById("savedStatus").textContent = "Note saved!";
+    setTimeout(() => {
+        document.getElementById("savedStatus").textContent = "";
+    }, 2000);
+}
+
+function loadDiary() {
+    const savedNote = localStorage.getItem("dailyNote");
+    if (savedNote) {
+        document.getElementById("diaryInput").value = savedNote;
+    }
+}
+
 updateClock();
+loadDiary();
 setInterval(updateClock, 1000);

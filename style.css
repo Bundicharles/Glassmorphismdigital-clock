@@ -9,35 +9,60 @@ body {
     justify-content: center;
     height: 100vh;
     color: rgb(11, 231, 40);
-}
-
-.clock-container {
+  }
+  
+  .main-container {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    padding: 20px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .clock-container {
     background: rgba(14, 0, 0, 0.76);
     border-radius: 20px;
     box-shadow: 0 8px 32px rgba(2, 243, 183, 0.774);
-    backdropfilter: blur(10px);
+    backdrop-filter: blur(10px);
     padding: 30px 40px;
     text-align: center;
-}
-
-.clock {
+    max-width: 400px;
+  }
+  
+  .clock {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 15px;
     font-size: 2rem;
-}
-
-.date-container {
-    margin-top: 20px;
+  }
+  
+  .block {
+    background: rgba(0, 194, 243, 0.952);
+    padding: 20px 30px;
+    border-radius: 12px;
+    font-size: 2.5rem;
+    min-width: 70px;
     text-align: center;
-}
-
-.date {
-    font-size: 20px;
-    color: rgb(250, 10, 10);
-}
-.date-container {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+  }
+  
+  /* Optional colon styling */
+  .colon {
+    font-size: 2.5rem;
+    padding: 0 10px;
+    opacity: 0.6;
+  }
+  
+  /* Animation on digit change */
+  .block.animate {
+    transform: rotateX(360deg);
+    opacity: 0.85;
+  }
+  
+  .date-container {
     background: rgba(3, 19, 245, 0.322);
     border-radius: 20px;
     padding: 15px 30px;
@@ -46,39 +71,66 @@ body {
     box-shadow: 0 8px 32px rgb(2, 255, 23);
     text-align: center;
     margin-top: 20px;
-}
-
-.date-container .date {
+  }
+  
+  .date-container .date {
     font-size: 24px;
     color: #46f700;
-}
-
-.block {
-    background: rgba(0, 194, 243, 0.952);
-    padding: 20px 30px;
-    border-radius: 12px;
-    font-size: 2.5rem;console.log('Clock container styles loaded.');
-console.log('Clock styles loaded.');
-console.log('Date container styles loaded.');
-console.log('Date styles loaded.');
-console.log('Block styles loaded.');
-console.log('Colon styles loaded.');
-console.log('Block animation styles loaded.');
-    min-width: 70px;
-    text-align: center;
-    transition: transform 0.5s ease, opacity 0.5s ease;
-}
-
-
-/* Optional colon styling */
-.colon {
-    font-size: 2.5rem;
-    padding: 0 10px;
-    opacity: 0.6;
-}
-
-/* Animation on digit change */
-.block.animate {
-    transform: rotateX(360deg);
-    opacity: 0.85;
-}
+  }
+  
+  /* Diary Section */
+  .diary-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 16px;
+    width: 300px;
+    color: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+  
+  .diary-container h2 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+  }
+  
+  #diaryInput {
+    width: 100%;
+    height: 200px;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 1rem;
+    resize: none;
+    border: none;
+    outline: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    overflow-y: auto;
+  }
+  
+  #diaryInput:focus {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  }
+  
+  button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  #savedStatus {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+  

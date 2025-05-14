@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="clock-container">
+    <div class="main-container">
+        <!-- Clock and Date -->
         <div class="clock-container">
             <div class="clock">
                 <div class="block" id="hours">00</div>
@@ -16,16 +17,19 @@
                 <span class="colon">:</span>
                 <div class="block" id="seconds">00</div>
             </div>
+            <div class="date-container">
+                <div class="date" id="dateDisplay"></div>
+            </div>
         </div>
-        
-    </div>
-
-    <!-- Date container below the clock -->
-    <div class="date-container">
-        <div id="dateDisplay">
-            <!-- JavaScript will insert: "Tuesday, 13/05/2025" -->
+    
+        <!-- Diary Section -->
+        <div class="diary-container">
+            <h2>My Daily Notes 📝</h2>
+            <textarea id="diaryInput" placeholder="Write about your day..."></textarea>
+            <button onclick="saveDiary()">Save Note</button>
+            <div id="savedStatus"></div>
         </div>
-    </div>
+    </div>    
 
     <noscript>
         <p>Please enable JavaScript to view the clock.</p>
