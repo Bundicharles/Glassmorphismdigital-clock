@@ -8,6 +8,7 @@
 </head>
 <body>
   <div class="main-container">
+    <!-- Clock Display -->
     <div class="clock-container">
       <div class="clock">
         <div id="hours" class="block">00</div>
@@ -18,24 +19,40 @@
       </div>
     </div>
 
+    <!-- Date Display -->
     <div class="date-container">
       <div class="date" id="dateDisplay">Loading...</div>
     </div>
 
+    <!-- Diary Input -->
     <div class="diary-container">
-      <h2>Note</h2>
+      <h2>Note / Reminder</h2>
       <textarea id="diaryInput" placeholder="Write something..."></textarea>
-      <button onclick="saveNote()">Save</button>
+      
+      <!-- Save for Today -->
+      <button onclick="saveNote()">Save Note</button>
+
+      <!-- Save Future Event -->
+      <div class="future-event-section">
+        <p><strong>Schedule a future event:</strong></p>
+        <input type="date" id="eventDate" />
+        <input type="time" id="eventTime" />
+        <button onclick="saveFutureEvent()">Save Future Event</button>
+      </div>
+
+      <!-- Save status -->
       <div id="savedStatus"></div>
 
       <hr>
 
+      <!-- Filter & View History -->
       <div class="history-controls">
         <label for="dateFilter"><strong>Filter by date:</strong></label>
         <input type="date" id="dateFilter" onchange="viewSavedHistory(this.value)">
         <button onclick="viewSavedHistory()">View All Notes</button>
       </div>
 
+      <!-- Notes Display -->
       <div id="notesHistory" class="notes-history-container">
         <!-- Notes will appear here -->
       </div>

@@ -30,20 +30,39 @@ function animateIfChanged(id, newValue) {
 function saveNote() {
     const note = document.getElementById("diaryInput").value.trim();
     if (note) {
-        const now = new Date();
-        const date = now.toISOString().split('T')[0];
-        const time = now.toTimeString().split(' ')[0];
-        const noteKey = `note_${date}_${time}`;
+        const currentDate = new Date();
+        const date = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
+        const time = currentDate.toTimeString().split(' ')[0]; // HH:MM:SS
+        const key = `note_${date}_${time}`;
         const noteWithTime = `${time} - ${note}`;
 
-        localStorage.setItem(noteKey, noteWithTime);
-
+        localStorage.setItem(key, noteWithTime);
         document.getElementById("savedStatus").textContent = "Note saved!";
-        document.getElementById("diaryInput").value = '';
+        document.getElementById("diaryInput").value = "";
     }
 }
 
-function viewSavedHistory(selectedDate = null) {
+function loadPreviousNote() {
+    const currentDate = new Date().toISOString().split('T')[0];
+    let latestTime = "";
+    let latestNote = "";
+
+    Object.keys(localStorage).forEach(key => {
+        if (key.startsWith(`note_${currentDate}_`)) {
+            const time = key.split("_")[2];
+            if (time > latestTime) {
+                latestTime = time;
+                latestNote = localStorage.getItem(key);
+            }
+        }
+    });
+
+    if (latestNote) {
+        document.getElementById("diaryInput").value = latestNote.split(" - ").slice(1).join(" - ");
+    }
+}
+
+function viewSavedHistory() {
     const notesHistoryContainer = document.getElementById("notesHistory");
     notesHistoryContainer.innerHTML = '';
 
@@ -52,13 +71,12 @@ function viewSavedHistory(selectedDate = null) {
     Object.keys(localStorage).forEach(key => {
         if (key.startsWith('note_')) {
             const [_, date, time] = key.split('_');
-            if (!selectedDate || selectedDate === date) {
-                notes.push({ key, date, time, content: localStorage.getItem(key) });
-            }
+            const content = localStorage.getItem(key);
+            notes.push({ key, date, time, content });
         }
     });
 
-    notes.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+    notes.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
 
     if (notes.length > 0) {
         notes.forEach(note => {
@@ -73,19 +91,61 @@ function viewSavedHistory(selectedDate = null) {
             notesHistoryContainer.appendChild(noteElement);
         });
     } else {
-        notesHistoryContainer.innerHTML = '<p>No saved notes available for this date.</p>';
+        notesHistoryContainer.innerHTML = '<p>No saved notes history available.</p>';
     }
 }
 
 function deleteNote(key) {
-    if (confirm("Are you sure you want to delete this note?")) {
-        localStorage.removeItem(key);
-        viewSavedHistory(document.getElementById("dateFilter").value); // Refresh view
+    localStorage.removeItem(key);
+    viewSavedHistory(); // refresh history
+}
+
+function saveFutureEvent() {
+    const note = document.getElementById("diaryInput").value.trim();
+    const date = document.getElementById("eventDate").value;
+    const time = document.getElementById("eventTime").value;
+
+    if (!note) {
+        alert("Please enter a note.");
+        return;
     }
+
+    if (!date || !time) {
+        alert("Please select a date and time.");
+        return;
+    }
+
+    const key = `event_${date}_${time}`;
+    const eventData = { note, notified: false };
+
+    localStorage.setItem(key, JSON.stringify(eventData));
+    document.getElementById("savedStatus").textContent = "Future event saved!";
+    document.getElementById("diaryInput").value = "";
+}
+
+function checkReminders() {
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0];
+    const currentTime = now.toTimeString().slice(0, 5); // HH:MM
+
+    Object.keys(localStorage).forEach(key => {
+        if (key.startsWith("event_")) {
+            const [_, date, time] = key.split("_");
+            if (date === currentDate && time === currentTime) {
+                const eventData = JSON.parse(localStorage.getItem(key));
+                if (eventData && !eventData.notified) {
+                    alert(`⏰ Reminder: ${eventData.note}`);
+                    eventData.notified = true;
+                    localStorage.setItem(key, JSON.stringify(eventData));
+                }
+            }
+        }
+    });
 }
 
 window.onload = function () {
     updateClock();
     setInterval(updateClock, 1000);
-    viewSavedHistory(); // Show all notes initially
+    setInterval(checkReminders, 60000); // every 1 min
+    loadPreviousNote();
 };
