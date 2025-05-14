@@ -152,4 +152,31 @@ body {
     font-size: 0.8rem;
     opacity: 0.8;
   }
+  #notesHistory {
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    color: white;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .note-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+  }
+  
+  .note-item strong {
+    font-size: 1.1rem;
+    color: #46f700;
+  }
+  
+  .note-item p {
+    font-size: 1rem;
+    margin-top: 5px;
+  }
   

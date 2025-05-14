@@ -44,6 +44,35 @@ function loadPreviousNote() {
     }
 }
 
+function viewSavedHistory() {
+    const notesHistoryContainer = document.getElementById("notesHistory");
+    notesHistoryContainer.innerHTML = '';  // Clear any previous history displayed
+
+    // Iterate over all keys in localStorage
+    Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('note_')) {
+            const noteDate = key.split('_')[1];  // Extract date part from the key
+            const noteContent = localStorage.getItem(key);  // Retrieve the note content
+
+            // Create a div to display the note date and content
+            const noteElement = document.createElement('div');
+            noteElement.classList.add('note-item');
+            noteElement.innerHTML = `
+                <strong>${noteDate}</strong>:<br>
+                <p>${noteContent}</p>
+                <hr>
+            `;
+
+            // Append the note to the history container
+            notesHistoryContainer.appendChild(noteElement);
+        }
+    });
+
+    if (!notesHistoryContainer.innerHTML) {
+        notesHistoryContainer.innerHTML = '<p>No saved notes history available.</p>';
+    }
+}
+
 window.onload = function () {
     updateClock();
     setInterval(updateClock, 1000);  // Update the clock every second
