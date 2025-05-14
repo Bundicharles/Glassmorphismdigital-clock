@@ -50,7 +50,7 @@ body {
     font-weight: bold;
     min-width: 60px;
     text-align: center;
-    box-shadow: 0 0 10px #ff8800;
+    box-shadow: 0 0 10px #00ff0d;
 }
 
 .colon {
@@ -69,7 +69,7 @@ body {
     border-radius: 12px;
     font-size: 1.2rem;
     color: #00ff66;
-    box-shadow: 0 0 10px #eb4f07;
+    box-shadow: 0 0 10px #15f301;
     display: inline-block;
 }
 
