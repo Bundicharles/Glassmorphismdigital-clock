@@ -1,3 +1,4 @@
+/* Base styles */
 body {
     margin: 0;
     padding: 0;
@@ -6,25 +7,24 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
+    justify-content: flex-start;
+    min-height: 100vh;
     color: rgb(11, 231, 40);
+    overflow-x: hidden;
   }
   
+  /* Main layout container */
   .main-container {
     display: flex;
     flex-direction: column;
-    gap: 50px;
-    padding: 50px;
     align-items: center;
-    justify-content: center;
-  }
-  .clock-date-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    gap: 25px;
+    padding: 30px 20px;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
+  /* Clock container */
   .clock-container {
     background: rgba(14, 0, 0, 0.76);
     border-radius: 20px;
@@ -32,40 +32,41 @@ body {
     backdrop-filter: blur(10px);
     padding: 40px 50px;
     text-align: center;
-    max-width: 400px;
+    width: 100%;
+    max-width: 500px;
+    box-sizing: border-box;
   }
   
   .clock {
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 5px;
+    align-items: center;
+    gap: 15px;
     font-size: 2rem;
   }
   
   .block {
     background: rgba(0, 194, 243, 0.952);
-    padding:24px 36px;
-    border-radius: 12px;
+    padding: 24px 36px;
+    border-radius: 16px;
     font-size: 2.5rem;
-    min-width: 80px;
+    min-width: 70px;
     text-align: center;
     transition: transform 0.5s ease, opacity 0.5s ease;
   }
   
-  /* Optional colon styling */
+  .block.animate {
+    transform: rotateX(360deg);
+    opacity: 0.85;
+  }
+  
   .colon {
     font-size: 2.5rem;
     padding: 0 10px;
     opacity: 0.6;
   }
   
-  /* Animation on digit change */
-  .block.animate {
-    transform: rotateX(360deg);
-    opacity: 0.85;
-  }
-  
+  /* Date container */
   .date-container {
     background: rgba(3, 19, 245, 0.322);
     border-radius: 20px;
@@ -74,7 +75,9 @@ body {
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px rgb(2, 255, 23);
     text-align: center;
-    margin-top: 20px;
+    width: 100%;
+    max-width: 500px;
+    box-sizing: border-box;
   }
   
   .date-container .date {
@@ -82,26 +85,29 @@ body {
     color: #46f700;
   }
   
-  /* Diary Section */
+  /* Diary container */
   .diary-container {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     padding: 24px;
-    border-radius: 16px;
-    width: 200px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 500px;
     color: white;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
   }
   
   .diary-container h2 {
     margin-bottom: 10px;
     font-size: 1.5rem;
+    text-align: center;
   }
   
   #diaryInput {
     width: 100%;
     height: 200px;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 14px;
     font-size: 1rem;
     resize: none;
@@ -110,6 +116,7 @@ body {
     background: rgba(255, 255, 255, 0.2);
     color: white;
     overflow-y: auto;
+    box-sizing: border-box;
   }
   
   #diaryInput:focus {
@@ -123,7 +130,7 @@ body {
     background-color: rgba(255, 255, 255, 0.2);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     transition: background 0.3s ease;
   }
@@ -136,5 +143,28 @@ body {
     margin-top: 8px;
     font-size: 0.9rem;
     opacity: 0.8;
+    text-align: center;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .clock-container,
+    .date-container,
+    .diary-container {
+      padding: 20px;
+    }
+  
+    .block {
+      padding: 16px 24px;
+      font-size: 2rem;
+    }
+  
+    .clock {
+      flex-wrap: wrap;
+    }
+  
+    #diaryInput {
+      height: 150px;
+    }
   }
   
