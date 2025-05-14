@@ -71,27 +71,26 @@ function saveFutureEvent() {
 function viewSavedHistory(filterDate = null) {
   const notesHistoryContainer = document.getElementById("notesHistory");
   notesHistoryContainer.innerHTML = '';
-  
+
   const notes = [];
 
   Object.keys(localStorage).forEach(key => {
-    if (key.startsWith('note_') || key.startsWith('future_')) {
-      const value = JSON.parse(localStorage.getItem(key));
-      const [type, time] = key.split('_');
-      const date = formatDate(new Date(value.savedAt));
-      
-      if (!filterDate || filterDate === date) {
-        notes.push({
-          type,
-          date,
-          time,
-          content: value.content,
-          savedAt: value.savedAt,
-          futureDate: value.futureDate,
-          reminderTime: value.reminderTime,
-          key
-        });
-      }
+    const value = JSON.parse(localStorage.getItem(key));
+    
+    if (key.startsWith("note_") || key.startsWith("future_")) {
+      const [type] = key.split('_');
+      const savedAt = value.savedAt || formatDate(new Date());
+      const futureDate = value.futureDate || '';
+      const reminderTime = value.reminderTime || '';
+
+      notes.push({
+        type,
+        savedAt,
+        futureDate,
+        reminderTime,
+        content: value.content,
+        key
+      });
     }
   });
 
@@ -107,9 +106,9 @@ function viewSavedHistory(filterDate = null) {
     noteElement.classList.add("note-item");
     noteElement.innerHTML = `
       <strong>${note.type === 'future' ? "📅 Future Event" : "📝 Note"}:</strong><br>
-      <strong>${note.savedAt}</strong><br>
+      <strong>Saved at: ${note.savedAt}</strong><br>
       <p>${note.content}</p>
-      ${note.type === 'future' ? `<strong>Reminder at: ${note.reminderTime}</strong><br>` : ""}
+      ${note.type === 'future' ? `<strong>Reminder: ${note.futureDate} at ${note.reminderTime}</strong><br>` : ""}
       <button onclick="deleteNote('${note.key}')">Delete</button>
       <hr>
     `;
