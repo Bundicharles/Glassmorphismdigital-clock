@@ -13,7 +13,7 @@
     align-items: center;
     padding: 2rem;
     min-height: 100vh;
-    background: linear-gradient(135deg, rgba(19, 0, 0, 0.993), rgba(255,255,255,0.05));
+    background: linear-gradient(135deg, rgba(148, 137, 137, 0.993), rgba(136, 131, 131, 0.05));
     backdropfilter: blur(10px);
   }
   
@@ -48,7 +48,7 @@
   }
   
   .date {
-    color: #fff;
+    color: #2ff708;
     font-size: 1.2rem;
     font-weight: 500;
   }
@@ -61,7 +61,7 @@
     width: 100%;
     max-width: 600px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-    color: #fff;
+    color: #0905f5;
   }
   
   .diary-container h2 {
@@ -82,7 +82,7 @@
   }
   
   textarea::placeholder {
-    color: #eee;
+    color: #2fffff;
   }
   
   button {
@@ -91,13 +91,13 @@
     margin: 0.5rem 0.3rem 1rem 0;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.25);
-    color: #fff;
+    color: #0852ddf8;
     cursor: pointer;
     transition: background 0.3s;
   }
   
   button:hover {
-    background: rgba(255, 255, 255, 0.4);
+    background: rgba(201, 10, 10, 0.795);
   }
   
   #savedStatus {
@@ -109,7 +109,7 @@
   /* Future event section */
   .future-event-section {
     margin-bottom: 1rem;
-    color: #fff;
+    color: #bf07f7;
   }
   
   .future-event-section input[type="date"],
@@ -117,7 +117,7 @@
     background: rgba(255, 255, 255, 0.15);
     border: none;
     padding: 0.4rem 0.6rem;
-    color: #fff;
+    color: #66f109;
     margin-right: 0.5rem;
     border-radius: 6px;
   }
@@ -135,7 +135,7 @@
     padding: 0.4rem 0.6rem;
     background: rgba(255, 255, 255, 0.15);
     border: none;
-    color: #fff;
+    color: #c7e908;
     border-radius: 6px;
   }
   
