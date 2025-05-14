@@ -1,40 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glassmorphism Digital Clock</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Glassmorphism Digital Clock with Diary</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="main-container">
-        <!-- Clock and Date -->
-        <div class="clock-container">
-            <div class="clock">
-                <div class="block" id="hours">00</div>
-                <span class="colon">:</span>
-                <div class="block" id="minutes">00</div>
-                <span class="colon">:</span>
-                <div class="block" id="seconds">00</div>
-            </div>
-            <div class="date-container">
-                <div class="date" id="dateDisplay"></div>
-            </div>
+  <div class="main-container">
+    <!-- Clock & Date Section -->
+    <div class="clock-date-wrapper">
+      <div class="clock-container">
+        <div class="clock">
+          <div id="hours" class="block">00</div>
+          <div class="colon">:</div>
+          <div id="minutes" class="block">00</div>
+          <div class="colon">:</div>
+          <div id="seconds" class="block">00</div>
         </div>
-    
-        <!-- Diary Section -->
-        <div class="diary-container">
-            <h2>My Daily Notes 📝</h2>
-            <textarea id="diaryInput" placeholder="Write about your day..."></textarea>
-            <button onclick="saveDiary()">Save Note</button>
-            <div id="savedStatus"></div>
-        </div>
-    </div>    
+      </div>
+      <div class="date-container">
+        <div class="date" id="dateDisplay">Loading...</div>
+      </div>
+    </div>
 
-    <noscript>
-        <p>Please enable JavaScript to view the clock.</p>
-    </noscript>
+    <!-- Diary Section BELOW clock/date -->
+    <div class="diary-container">
+      <h2>Daily Diary</h2>
+      <textarea id="diaryInput" placeholder="Write your thoughts..."></textarea>
+      <button onclick="saveDiary()">Save</button>
+      <div id="savedStatus"></div>
+    </div>
+  </div>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
