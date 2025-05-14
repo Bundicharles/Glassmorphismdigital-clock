@@ -30,8 +30,13 @@ function animateIfChanged(id, newValue) {
 function saveNote() {
     const note = document.getElementById("diaryInput").value.trim();
     if (note) {
-        const currentDate = new Date().toISOString().split('T')[0]; // Get the current date in YYYY-MM-DD format
-        localStorage.setItem(`note_${currentDate}`, note);  // Save note with the current date as the key
+        const currentDate = new Date();
+        const date = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
+        const time = currentDate.toTimeString().split(' ')[0]; // HH:MM:SS
+        const noteWithTime = `${time} - ${note}`; // Combine time and note
+
+        // Save the note with the date as the key
+        localStorage.setItem(`note_${date}_${time}`, noteWithTime);
         document.getElementById("savedStatus").textContent = "Note saved!";
     }
 }
@@ -48,27 +53,36 @@ function viewSavedHistory() {
     const notesHistoryContainer = document.getElementById("notesHistory");
     notesHistoryContainer.innerHTML = '';  // Clear any previous history displayed
 
+    const notes = [];
+
     // Iterate over all keys in localStorage
     Object.keys(localStorage).forEach(key => {
         if (key.startsWith('note_')) {
             const noteDate = key.split('_')[1];  // Extract date part from the key
+            const noteTime = key.split('_')[2];  // Extract time part from the key
             const noteContent = localStorage.getItem(key);  // Retrieve the note content
+            notes.push({ date: noteDate, time: noteTime, content: noteContent });
+        }
+    });
 
-            // Create a div to display the note date and content
+    // Sort the notes array by date and time (ascending order)
+    notes.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+
+    if (notes.length > 0) {
+        notes.forEach(note => {
+            // Create a div to display the note date, time, and content
             const noteElement = document.createElement('div');
             noteElement.classList.add('note-item');
             noteElement.innerHTML = `
-                <strong>${noteDate}</strong>:<br>
-                <p>${noteContent}</p>
+                <strong>${note.date} ${note.time}</strong>:<br>
+                <p>${note.content}</p>
                 <hr>
             `;
 
             // Append the note to the history container
             notesHistoryContainer.appendChild(noteElement);
-        }
-    });
-
-    if (!notesHistoryContainer.innerHTML) {
+        });
+    } else {
         notesHistoryContainer.innerHTML = '<p>No saved notes history available.</p>';
     }
 }
