@@ -123,12 +123,12 @@ body {
     border: none;
     outline: none;
     background: rgb(1, 16, 22);
-    color: rgb(247, 5, 5);
+    color: rgb(33, 247, 5);
     overflow-y: auto;
   }
   
   #diaryInput:focus {
-    background: rgba(6, 247, 255, 0.938);
+    background: rgba(47, 123, 126, 0.938);
     box-shadow: 0 0 8px rgb(98, 245, 0);
   }
   
