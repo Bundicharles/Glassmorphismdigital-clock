@@ -187,4 +187,15 @@
     background: #00111a;
     color: #00ffcc;
   }
-  
+  .note-time {
+    display: inline-block;
+    background: #0a0a2a;
+    padding: 0.2em 0.6em;
+    margin-right: 0.5em;
+    border-radius: 10px;
+    color: #00aaff;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: inset 2px 2px 5px #000000, inset -2px -2px 5px #1a1a1a;
+  }
+ 
