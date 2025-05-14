@@ -8,13 +8,13 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    color: white;
+    color: rgb(25, 11, 231);
 }
 
 .clock-container {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(14, 0, 0, 0.76);
     border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(2, 243, 183, 0.774);
     backdropfilter: blur(10px);
     padding: 30px 40px;
     text-align: center;
@@ -35,26 +35,26 @@ body {
 
 .date {
     font-size: 20px;
-    color: white;
+    color: rgb(250, 10, 10);
 }
 .date-container {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(241, 238, 238, 0.76);
     border-radius: 20px;
     padding: 15px 30px;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 32px rgb(1, 243, 22);
     text-align: center;
     margin-top: 20px;
 }
 
 .date-container .date {
     font-size: 24px;
-    color: #ffffff;
+    color: #0fc7f5;
 }
 
 .block {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 194, 243, 0.952);
     padding: 20px 30px;
     border-radius: 12px;
     font-size: 2.5rem;
