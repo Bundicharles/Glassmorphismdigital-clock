@@ -55,20 +55,27 @@
 
       <hr>
 
-      <!-- Future Events -->
+      <!-- Future Events Section -->
       <div id="futureEventsContainer">
-        <h3>Upcoming Events</h3>
+        <h3>Add Future Event</h3>
 
         <!-- Input Fields -->
         <div class="future-event-inputs">
           <input type="text" id="eventTitle" placeholder="Event Title" />
           <input type="date" id="eventDate" />
           <textarea id="eventDescription" placeholder="Event Description"></textarea>
-          <button onclick="saveFutureEvent()">Add Future Event</button>
+          <button onclick="saveFutureEvent()">Save Future Event</button>
         </div>
 
-        <!-- Future Events List -->
-        <div id="futureEventsList"></div>
+        <hr>
+
+        <!-- Display Saved Events -->
+        <div id="savedFutureEvents">
+          <h3>Saved Future Events</h3>
+          <div id="futureEventsList">
+            <!-- Events will be populated here by JS -->
+          </div>
+        </div>
       </div>
     </div>
   </div>
