@@ -8,10 +8,9 @@
   <!-- PWA Support -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#00ff66">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" href="icon-192.png">
-
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="icon-192.png">
 
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -59,8 +58,17 @@
       <!-- Future Events -->
       <div id="futureEventsContainer">
         <h3>Upcoming Events</h3>
+
+        <!-- Input Fields -->
+        <div class="future-event-inputs">
+          <input type="text" id="eventTitle" placeholder="Event Title" />
+          <input type="date" id="eventDate" />
+          <textarea id="eventDescription" placeholder="Event Description"></textarea>
+          <button onclick="saveFutureEvent()">Add Future Event</button>
+        </div>
+
+        <!-- Future Events List -->
         <div id="futureEventsList"></div>
-        <button onclick="saveFutureEvent()">Add Future Event</button>
       </div>
     </div>
   </div>
