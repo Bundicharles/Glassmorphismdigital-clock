@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Glassmorphism Digital Clock with Diary</title>
 
-  <!-- Manifest for PWA -->
+  <!-- PWA Support -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#00ff66" />
-
-  <!-- Favicon / App Icons -->
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-512.png">
 
@@ -17,6 +15,7 @@
 </head>
 <body>
   <div class="main-container">
+    <!-- Clock -->
     <div class="clock-container">
       <div class="clock">
         <div id="hours" class="block">00</div>
@@ -27,23 +26,48 @@
       </div>
     </div>
 
+    <!-- Date Display -->
     <div class="date-container">
       <div class="date" id="dateDisplay">Loading...</div>
     </div>
 
+    <!-- Diary Section -->
     <div class="diary-container">
-      <h2>Note</h2>
-      <textarea id="diaryInput" placeholder="Write something..."></textarea>
-      <button onclick="saveNote()">Save</button>
+      <h2>Note / Event</h2>
+      <textarea id="diaryInput" placeholder="Write a note or future event..."></textarea>
+
+      <!-- Add Buttons -->
+      <button onclick="saveNote()">Save Note</button>
+      <button onclick="addFutureEvent()">Add Future Event</button>
+
       <div id="savedStatus"></div>
-      <button onclick="viewSavedHistory()">View Saved Notes</button>
-      <div id="notesHistory"></div>
+
+      <hr>
+
+      <!-- History Filter -->
+      <div class="history-controls">
+        <label for="dateFilter"><strong>Filter by date:</strong></label>
+        <input type="date" id="dateFilter" onchange="viewSavedHistory(this.value)">
+        <button onclick="viewSavedHistory()">View All Notes</button>
+      </div>
+
+      <!-- Saved Notes -->
+      <div id="notesHistory" class="notes-history-container"></div>
+
+      <hr>
+
+      <!-- Future Events -->
+      <div id="futureEventsContainer">
+        <h3>Upcoming Events</h3>
+        <div id="futureEventsList"></div>
+      </div>
     </div>
   </div>
 
+  <!-- JavaScript -->
   <script src="script.js"></script>
 
-  <!-- Service Worker Registration -->
+  <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
