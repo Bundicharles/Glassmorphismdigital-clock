@@ -35,9 +35,12 @@ function saveNote() {
         const time = currentDate.toTimeString().split(' ')[0]; // HH:MM:SS
         const noteWithTime = `${time} - ${note}`; // Combine time and note
 
-        // Save the note with the date as the key
+        // Save the note with the date and time as the key
         localStorage.setItem(`note_${date}_${time}`, noteWithTime);
         document.getElementById("savedStatus").textContent = "Note saved!";
+
+        // Clear the text area after saving the note
+        document.getElementById("diaryInput").value = '';
     }
 }
 
