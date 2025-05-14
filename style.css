@@ -86,9 +86,9 @@ body {
   .diary-container {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    padding: 100px;
+    padding: 7dvb;
     border-radius: 16px;
-    width: 70px;
+    width: 200px;
     color: white;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   }
