@@ -5,24 +5,22 @@ function viewSavedHistory(filterDate = null) {
 
   Object.keys(localStorage).forEach(key => {
     if (key.startsWith('note_') || key.startsWith('future_')) {
-      const [type, date, time] = key.split('_');
       const value = JSON.parse(localStorage.getItem(key));
+      const isFuture = key.startsWith('future_');
+      const displayDate = isFuture ? value.reminder : value.savedAt;
 
-      if (!filterDate || filterDate === date) {
+      if (!filterDate || (displayDate && displayDate.startsWith(filterDate))) {
         notes.push({
-          type,
-          date,
-          time,
+          type: isFuture ? 'future' : 'note',
           content: value.content,
-          savedAt: value.savedAt,
-          futureDate: value.futureDate,
+          displayDate,
           key
         });
       }
     }
   });
 
-  notes.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+  notes.sort((a, b) => new Date(a.displayDate) - new Date(b.displayDate));
 
   if (notes.length === 0) {
     container.innerHTML = '<p>No saved notes or events found.</p>';
@@ -34,7 +32,7 @@ function viewSavedHistory(filterDate = null) {
     div.classList.add("note-item");
     div.innerHTML = `
       <strong>${note.type === 'future' ? "📅 Future Event" : "📝 Note"}:</strong><br>
-      <strong>${note.savedAt}</strong><br>
+      <strong>${note.displayDate}</strong><br>
       <p>${note.content}</p>
       <button onclick="deleteNote('${note.key}')">Delete</button>
       <hr>
