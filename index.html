@@ -7,29 +7,39 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="main-container">
-        <div class="clock-container">
-          <div class="clock">
-            <div id="hours" class="block">00</div>
-            <div class="colon">:</div>
-            <div id="minutes" class="block">00</div>
-            <div class="colon">:</div>
-            <div id="seconds" class="block">00</div>
-          </div>
-        </div>
-    
-        <div class="date-container">
-          <div class="date" id="dateDisplay">Loading...</div>
-        </div>
-    
-        <div class="diary-container">
-          <h2>Note</h2>
-          <textarea id="diaryInput" placeholder="Write something..."></textarea>
-          <button onclick="saveNote()">Save</button>
-          <div id="savedStatus"></div>
-          <button onclick="viewSavedHistory()">View Saved Notes</button>
-    <div id="notesHistory"></div>
-        </div>
+  <div class="main-container">
+    <div class="clock-container">
+      <div class="clock">
+        <div id="hours" class="block">00</div>
+        <div class="colon">:</div>
+        <div id="minutes" class="block">00</div>
+        <div class="colon">:</div>
+        <div id="seconds" class="block">00</div>
+      </div>
+    </div>
+
+    <div class="date-container">
+      <div class="date" id="dateDisplay">Loading...</div>
+    </div>
+
+    <div class="diary-container">
+      <h2>Note</h2>
+      <textarea id="diaryInput" placeholder="Write something..."></textarea>
+      <button onclick="saveNote()">Save</button>
+      <div id="savedStatus"></div>
+
+      <hr>
+
+      <div class="history-controls">
+        <label for="dateFilter"><strong>Filter by date:</strong></label>
+        <input type="date" id="dateFilter" onchange="viewSavedHistory(this.value)">
+        <button onclick="viewSavedHistory()">View All Notes</button>
+      </div>
+
+      <div id="notesHistory" class="notes-history-container">
+        <!-- Notes will appear here -->
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>

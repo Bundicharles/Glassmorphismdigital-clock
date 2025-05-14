@@ -21,7 +21,7 @@ function animateIfChanged(id, newValue) {
     const el = document.getElementById(id);
     if (el.textContent !== newValue) {
         el.classList.remove("animate");
-        void el.offsetWidth;  // trigger reflow
+        void el.offsetWidth;
         el.textContent = newValue;
         el.classList.add("animate");
     }
@@ -30,68 +30,62 @@ function animateIfChanged(id, newValue) {
 function saveNote() {
     const note = document.getElementById("diaryInput").value.trim();
     if (note) {
-        const currentDate = new Date();
-        const date = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
-        const time = currentDate.toTimeString().split(' ')[0]; // HH:MM:SS
-        const noteWithTime = `${time} - ${note}`; // Combine time and note
+        const now = new Date();
+        const date = now.toISOString().split('T')[0];
+        const time = now.toTimeString().split(' ')[0];
+        const noteKey = `note_${date}_${time}`;
+        const noteWithTime = `${time} - ${note}`;
 
-        // Save the note with the date and time as the key
-        localStorage.setItem(`note_${date}_${time}`, noteWithTime);
+        localStorage.setItem(noteKey, noteWithTime);
+
         document.getElementById("savedStatus").textContent = "Note saved!";
-
-        // Clear the text area after saving the note
         document.getElementById("diaryInput").value = '';
     }
 }
 
-function loadPreviousNote() {
-    const currentDate = new Date().toISOString().split('T')[0];  // Get today's date in YYYY-MM-DD format
-    const savedNote = localStorage.getItem(`note_${currentDate}`);  // Retrieve the note for the current date
-    if (savedNote) {
-        document.getElementById("diaryInput").value = savedNote;  // Load the saved note into the text area
-    }
-}
-
-function viewSavedHistory() {
+function viewSavedHistory(selectedDate = null) {
     const notesHistoryContainer = document.getElementById("notesHistory");
-    notesHistoryContainer.innerHTML = '';  // Clear any previous history displayed
+    notesHistoryContainer.innerHTML = '';
 
     const notes = [];
 
-    // Iterate over all keys in localStorage
     Object.keys(localStorage).forEach(key => {
         if (key.startsWith('note_')) {
-            const noteDate = key.split('_')[1];  // Extract date part from the key
-            const noteTime = key.split('_')[2];  // Extract time part from the key
-            const noteContent = localStorage.getItem(key);  // Retrieve the note content
-            notes.push({ date: noteDate, time: noteTime, content: noteContent });
+            const [_, date, time] = key.split('_');
+            if (!selectedDate || selectedDate === date) {
+                notes.push({ key, date, time, content: localStorage.getItem(key) });
+            }
         }
     });
 
-    // Sort the notes array by date and time (ascending order)
     notes.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
 
     if (notes.length > 0) {
         notes.forEach(note => {
-            // Create a div to display the note date, time, and content
             const noteElement = document.createElement('div');
             noteElement.classList.add('note-item');
             noteElement.innerHTML = `
                 <strong>${note.date} ${note.time}</strong>:<br>
                 <p>${note.content}</p>
+                <button onclick="deleteNote('${note.key}')">Delete</button>
                 <hr>
             `;
-
-            // Append the note to the history container
             notesHistoryContainer.appendChild(noteElement);
         });
     } else {
-        notesHistoryContainer.innerHTML = '<p>No saved notes history available.</p>';
+        notesHistoryContainer.innerHTML = '<p>No saved notes available for this date.</p>';
+    }
+}
+
+function deleteNote(key) {
+    if (confirm("Are you sure you want to delete this note?")) {
+        localStorage.removeItem(key);
+        viewSavedHistory(document.getElementById("dateFilter").value); // Refresh view
     }
 }
 
 window.onload = function () {
     updateClock();
-    setInterval(updateClock, 1000);  // Update the clock every second
-    loadPreviousNote();  // Load the note for the current day when the page loads
+    setInterval(updateClock, 1000);
+    viewSavedHistory(); // Show all notes initially
 };
