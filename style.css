@@ -8,7 +8,7 @@
   
   body {
     background: linear-gradient(to bottom, #505250dc, #070707);
-    color: #00ff99;
+    color: #07fc07;
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -33,8 +33,8 @@
     padding: 0.5em 1em;
     border-radius: 12px;
     font-size: 1.2rem;
-    color: #00ff66;
-    box-shadow: 0 0 10px #00ff66;
+    color: #07fc07;
+    box-shadow: 0 0 10px #07fc07;
     display: inline-block;
   }
   
@@ -57,7 +57,7 @@
   }
   
   .colon {
-    color: #ffffff;
+    color: #07fc07;
   }
   
   /* Date Display */
@@ -79,7 +79,7 @@
   /* Diary */
   .diary-container h2 {
     margin-top: 1.5rem;
-    color: #ffffff;
+    color: #171557;
   }
   
   textarea {
@@ -90,13 +90,13 @@
     border: none;
     resize: none;
     font-size: 1rem;
-    background: #00111a;
+    background: #03527c;
     color: #00ff66;
     margin-bottom: 0.5rem;
   }
   
   textarea::placeholder {
-    color: #44ffbb;
+    color: #00fc2a;
   }
   
   button {
@@ -117,7 +117,7 @@
   }
   
   #savedStatus {
-    color: lightgreen;
+    color: rgb(14, 240, 14);
     font-size: 0.9rem;
     margin-top: 0.5rem;
   }
