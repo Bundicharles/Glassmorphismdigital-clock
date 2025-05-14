@@ -14,8 +14,8 @@ body {
   .main-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding: 50px;
+    gap: 50px;
+    padding: 150px;
     align-items: center;
     justify-content: center;
   }
@@ -39,7 +39,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
+    gap: 5px;
     font-size: 2rem;
   }
   
