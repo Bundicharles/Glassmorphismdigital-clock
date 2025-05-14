@@ -34,10 +34,8 @@
 
     <!-- Diary Section -->
     <div class="diary-container">
-      <h2>Note / Event</h2>
-      <textarea id="diaryInput" placeholder="Write a note or future event..."></textarea>
-
-      <!-- Add Buttons -->
+      <h2>Note / Future Event</h2>
+      <textarea id="diaryInput" placeholder="Write a note. You can include a date like 2025-05-20..."></textarea>
       <button onclick="saveNote()">Save Note</button>
       <div id="savedStatus"></div>
 
@@ -52,31 +50,6 @@
 
       <!-- Saved Notes -->
       <div id="notesHistory" class="notes-history-container"></div>
-
-      <hr>
-
-      <!-- Future Events Section -->
-      <div id="futureEventsContainer">
-        <h3>Add Future Event</h3>
-
-        <!-- Input Fields -->
-        <div class="future-event-inputs">
-          <input type="text" id="eventTitle" placeholder="Event Title" />
-          <input type="date" id="eventDate" />
-          <textarea id="eventDescription" placeholder="Event Description"></textarea>
-          <button onclick="saveFutureEvent()">Save Future Event</button>
-        </div>
-
-        <hr>
-
-        <!-- Display Saved Events -->
-        <div id="savedFutureEvents">
-          <h3>Saved Future Events</h3>
-          <div id="futureEventsList">
-            <!-- Events will be populated here by JS -->
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
