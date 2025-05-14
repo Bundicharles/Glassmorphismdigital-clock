@@ -55,7 +55,7 @@
   
   /* Diary Container */
   .diary-container {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(12, 0, 0, 0.925);
     padding: 1.5rem;
     border-radius: 15px;
     width: 100%;
@@ -76,8 +76,8 @@
     border-radius: 10px;
     padding: 0.8rem;
     font-size: 1rem;
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
+    background: rgb(2, 248, 236);
+    color: #1df70a;
     margin-bottom: 0.8rem;
   }
   
