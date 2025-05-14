@@ -7,30 +7,27 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="main-container">
-    <!-- Clock & Date Section -->
-    <div class="clock-date-wrapper">
-      <div class="clock-container">
-        <div class="clock">
-          <div id="hours" class="block">00</div>
-          <div class="colon">:</div>
-          <div id="minutes" class="block">00</div>
-          <div class="colon">:</div>
-          <div id="seconds" class="block">00</div>
+    <div class="main-container">
+        <div class="clock-container">
+          <div class="clock">
+            <div id="hours" class="block">00</div>
+            <div class="colon">:</div>
+            <div id="minutes" class="block">00</div>
+            <div class="colon">:</div>
+            <div id="seconds" class="block">00</div>
+          </div>
         </div>
-      </div>
-      <div class="date-container">
-        <div class="date" id="dateDisplay">Loading...</div>
-      </div>
-    </div>
-
-    <!-- Diary Section BELOW clock/date -->
-    <div class="diary-container">
-      <h2>Daily Diary</h2>
-      <textarea id="diaryInput" placeholder="Write your thoughts..."></textarea>
-      <button onclick="saveDiary()">Save</button>
-      <div id="savedStatus"></div>
-    </div>
+    
+        <div class="date-container">
+          <div class="date" id="dateDisplay">Loading...</div>
+        </div>
+    
+        <div class="diary-container">
+          <h2>Note</h2>
+          <textarea id="diaryInput" placeholder="Write something..."></textarea>
+          <button onclick="saveNote()">Save</button>
+          <div id="savedStatus"></div>
+        </div>
   </div>
 
   <script src="script.js"></script>
