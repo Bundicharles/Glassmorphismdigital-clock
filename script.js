@@ -215,20 +215,42 @@ function checkAlarms() {
     });
 }
 
-// Alarm notification using browser API
-function showAlarmNotification(time) {
-    if (Notification.permission === "granted") {
-        new Notification("⏰ Alarm!", {
-            body: `It's ${time}`,
-            icon: "alarm-icon.png" // optional: add an icon
-        });
-    }
-}
-
-// Request permission for notifications
+// Request notification permission on load
 if ("Notification" in window && Notification.permission !== "granted") {
-    Notification.requestPermission();
+  Notification.requestPermission().then((permission) => {
+    if (permission !== "granted") {
+      console.warn("Notification permission denied.");
+    }
+  });
 }
 
-// Call checkAlarms every 30 seconds
+// Show alarm notification using browser API
+function showAlarmNotification(time) {
+  if (Notification.permission === "granted") {
+    new Notification("⏰ Alarm!", {
+      body: `It's ${time}`,
+      icon: "alarm-icon.png", // make sure this file exists in root or correct path
+      vibrate: [200, 100, 200], // optional vibration pattern for devices
+    });
+  } else {
+    console.warn("Notification permission not granted.");
+  }
+}
+
+// Call alarm check every 30 seconds
 setInterval(checkAlarms, 30000);
+
+// Logging for function activity tracking
+console.log("🔄 updateClock function called");
+console.log("✨ animateIfChanged function called");
+console.log("💾 saveNote function called");
+console.log("📆 saveFutureEvent function called");
+console.log("📖 viewSavedHistory function called");
+console.log("🗑️ deleteNote function called");
+console.log("📅 formatDate function called");
+console.log("⏰ checkReminders function called");
+console.log("🔔 sendNotification function called");
+console.log("➕ addAlarm function called");
+console.log("🖼️ renderAlarms function called");
+console.log("✅ checkAlarms function called");
+console.log("🚨 showAlarmNotification function called");
