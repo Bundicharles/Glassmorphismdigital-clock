@@ -167,3 +167,68 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+let alarms = [];
+let alarmSound = new Audio('alarm.mp3'); // Add an alarm.mp3 file in your project folder
+
+function addAlarm() {
+    const timeInput = document.getElementById("alarmTime").value;
+    if (!timeInput) return alert("Please select a time.");
+
+    if (alarms.includes(timeInput)) {
+        alert("Alarm already set for this time.");
+        return;
+    }
+
+    alarms.push(timeInput);
+    renderAlarms();
+    alert(`Alarm set for ${timeInput}`);
+}
+
+function renderAlarms() {
+    const alarmList = document.getElementById("alarmList");
+    alarmList.innerHTML = '';
+
+    alarms.forEach((time, index) => {
+        const li = document.createElement("li");
+        li.textContent = time;
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "Remove";
+        removeBtn.onclick = () => {
+            alarms.splice(index, 1);
+            renderAlarms();
+        };
+        li.appendChild(removeBtn);
+        alarmList.appendChild(li);
+    });
+}
+
+function checkAlarms() {
+    const now = new Date();
+    const currentTime = now.toTimeString().slice(0, 5); // HH:MM
+    alarms.forEach((alarmTime, i) => {
+        if (alarmTime === currentTime) {
+            showAlarmNotification(alarmTime);
+            alarmSound.play();
+            alarms.splice(i, 1); // remove after trigger
+            renderAlarms();
+        }
+    });
+}
+
+// Alarm notification using browser API
+function showAlarmNotification(time) {
+    if (Notification.permission === "granted") {
+        new Notification("⏰ Alarm!", {
+            body: `It's ${time}`,
+            icon: "alarm-icon.png" // optional: add an icon
+        });
+    }
+}
+
+// Request permission for notifications
+if ("Notification" in window && Notification.permission !== "granted") {
+    Notification.requestPermission();
+}
+
+// Call checkAlarms every 30 seconds
+setInterval(checkAlarms, 30000);
