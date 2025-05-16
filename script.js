@@ -254,3 +254,23 @@ console.log("➕ addAlarm function called");
 console.log("🖼️ renderAlarms function called");
 console.log("✅ checkAlarms function called");
 console.log("🚨 showAlarmNotification function called");
+function playAlarmSound() {
+  const audio = document.getElementById("alarmSound");
+  if (audio) {
+    audio.play().catch((e) => {
+      console.warn("Alarm sound failed to play:", e);
+    });
+  }
+}
+
+function showAlarmNotification(time) {
+  playAlarmSound(); // 👈 play sound
+
+  if (Notification.permission === "granted") {
+    new Notification("⏰ Alarm!", {
+      body: `It's ${time}`,
+      icon: "alarm-icon.png",
+      vibrate: [200, 100, 200],
+    });
+  }
+}
