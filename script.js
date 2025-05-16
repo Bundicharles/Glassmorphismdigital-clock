@@ -1,10 +1,10 @@
 let alarms = [];
 let alarmTimeout = null;
-let customAlarmSound = null;
 let snoozeTimeout = null;
+let customAlarmSound = null;
 const alarmSoundElement = document.getElementById("alarmSound");
 
-// Clock + Date Update
+// ---------- Clock and Date ----------
 function updateClock() {
   const now = new Date();
   const hours = now.getHours().toString().padStart(2, "0");
@@ -22,7 +22,7 @@ function updateClock() {
   const year = now.getFullYear();
   document.getElementById("dateDisplay").textContent = `${date}/${month}/${year} (${dayName})`;
 
-  checkReminders(now);
+  checkFutureEvents(now);
   checkAlarms(now);
 }
 
@@ -36,130 +36,149 @@ function animateIfChanged(id, newValue) {
   }
 }
 
-// Notes and events saving, viewing, deleting
-function saveNote() {
+// ---------- Diary / Future Events ----------
+
+/**
+ * Saves either a current note or a future event depending on user input.
+ * Future events require a date and time; notes do not.
+ */
+function saveEntry() {
   const content = document.getElementById("diaryInput").value.trim();
-  if (!content) return;
+  if (!content) {
+    alert("Please enter some text.");
+    return;
+  }
 
-  const now = new Date();
-  const key = `note_${Date.now()}`;
-  const note = {
-    content,
-    savedAt: formatDate(now)
-  };
+  // Ask user if this is a future event or a current note
+  const isFuture = confirm("Save as a future event? (OK for yes, Cancel for no)");
 
-  localStorage.setItem(key, JSON.stringify(note));
-  document.getElementById("savedStatus").textContent = "📝 Note saved!";
+  if (isFuture) {
+    // For future event, get date and time
+    let eventDate = prompt("Enter event date (YYYY-MM-DD):");
+    if (!eventDate || !isValidDate(eventDate)) {
+      alert("Invalid or missing date.");
+      return;
+    }
+
+    let eventTime = prompt("Enter event time (HH:MM, 24-hour):");
+    if (!eventTime || !isValidTime(eventTime)) {
+      alert("Invalid or missing time.");
+      return;
+    }
+
+    // Save future event
+    const key = `future_${Date.now()}`;
+    const event = {
+      content,
+      eventDate,  // in YYYY-MM-DD
+      eventTime,  // in HH:MM
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem(key, JSON.stringify(event));
+    alert(`Future event saved for ${eventDate} at ${eventTime}.`);
+  } else {
+    // Save current note with today's date
+    const now = new Date();
+    const key = `note_${Date.now()}`;
+    const note = {
+      content,
+      savedAt: now.toISOString().slice(0, 10)  // YYYY-MM-DD
+    };
+    localStorage.setItem(key, JSON.stringify(note));
+    alert("Note saved for today.");
+  }
+
   document.getElementById("diaryInput").value = "";
   viewSavedHistory();
 }
 
-function saveFutureEvent() {
-  const content = document.getElementById("diaryInput").value.trim();
-  const futureDate = prompt("Enter event date (DD/MM/YYYY):");
-  const reminderTime = prompt("Enter reminder time (HH:MM):");
-
-  if (content && futureDate && reminderTime) {
-    const key = `future_${Date.now()}`;
-    const event = {
-      content,
-      futureDate,
-      reminderTime,
-      savedAt: formatDate(new Date())
-    };
-
-    localStorage.setItem(key, JSON.stringify(event));
-    document.getElementById("savedStatus").textContent = "📅 Event saved!";
-    document.getElementById("diaryInput").value = "";
-    viewSavedHistory();
-  }
+// Helper: Validate date in YYYY-MM-DD
+function isValidDate(dateString) {
+  const reg = /^\d{4}-\d{2}-\d{2}$/;
+  if (!reg.test(dateString)) return false;
+  const d = new Date(dateString);
+  return d instanceof Date && !isNaN(d);
 }
 
-function formatDate(date) {
-  const d = date.getDate().toString().padStart(2, "0");
-  const m = (date.getMonth() + 1).toString().padStart(2, "0");
-  const y = date.getFullYear();
-  return `${d}/${m}/${y}`;
+// Helper: Validate time in HH:MM 24h
+function isValidTime(timeString) {
+  const reg = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  return reg.test(timeString);
 }
 
-function viewSavedHistory(filterDate = null) {
+// View saved entries for selected date (notes + future events)
+function viewSavedHistory() {
+  const dateFilter = document.getElementById("dateFilter").value; // YYYY-MM-DD or empty
   const container = document.getElementById("notesHistory");
-  container.innerHTML = '';
-  const notes = [];
+  container.innerHTML = "";
 
-  Object.keys(localStorage).forEach(key => {
-    if (key.startsWith("note_") || key.startsWith("future_")) {
-      const data = JSON.parse(localStorage.getItem(key));
-      const type = key.startsWith("future_") ? "future" : "note";
-
-      if (filterDate) {
-        const [year, month, day] = filterDate.split("-");
-        const formatted = `${day}/${month}/${year}`;
-        if (data.savedAt !== formatted && data.futureDate !== formatted) return;
-      }
-
-      notes.push({
-        ...data,
-        key,
-        type
-      });
-    }
-  });
-
-  notes.sort((a, b) => new Date(a.savedAt) - new Date(b.savedAt));
-
-  if (notes.length === 0) {
-    container.innerHTML = "<p>No notes or events.</p>";
+  if (!dateFilter) {
+    container.innerHTML = "<p>Please select a date to view saved notes and events.</p>";
     return;
   }
 
-  notes.forEach(note => {
-    const div = document.createElement("div");
-    div.classList.add("note-item");
-    div.innerHTML = `
-      <strong>${note.type === "future" ? "📅 Event" : "📝 Note"}:</strong><br>
-      <strong>Saved: ${note.savedAt}</strong><br>
-      <p>${note.content}</p>
-      ${note.type === "future" ? `<strong>Reminder: ${note.futureDate} at ${note.reminderTime}</strong><br>` : ""}
-      <button onclick="deleteNote('${note.key}')">Delete</button>
-      <hr>`;
-    container.appendChild(div);
+  let found = false;
+
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith("note_") || key.startsWith("future_")) {
+      const entry = JSON.parse(localStorage.getItem(key));
+      
+      // For notes, savedAt is date; for future events, eventDate is the event date
+      const entryDate = key.startsWith("note_") ? entry.savedAt : entry.eventDate;
+
+      if (entryDate === dateFilter) {
+        found = true;
+        const div = document.createElement("div");
+        div.classList.add("note-item");
+
+        if (key.startsWith("note_")) {
+          div.innerHTML = `
+            <strong>📝 Note</strong><br>
+            <p>${entry.content}</p>
+            <small>Saved At: ${entry.savedAt}</small><br>
+            <button onclick="deleteEntry('${key}')">Delete</button>
+            <hr>
+          `;
+        } else {
+          div.innerHTML = `
+            <strong>📅 Future Event</strong><br>
+            <p>${entry.content}</p>
+            <small>Event Date: ${entry.eventDate} ${entry.eventTime}</small><br>
+            <button onclick="deleteEntry('${key}')">Delete</button>
+            <hr>
+          `;
+        }
+
+        container.appendChild(div);
+      }
+    }
   });
+
+  if (!found) {
+    container.innerHTML = "<p>No notes or future events found for this date.</p>";
+  }
 }
 
-function deleteNote(key) {
+// Delete a note or event by key
+function deleteEntry(key) {
   if (confirm("Delete this entry?")) {
     localStorage.removeItem(key);
     viewSavedHistory();
   }
 }
 
-// Reminders checking
-function checkReminders(currentDate) {
-  const time = `${currentDate.getHours().toString().padStart(2, "0")}:${currentDate.getMinutes().toString().padStart(2, "0")}`;
+// ---------- Alarm Logic (including snooze) ----------
 
-  Object.keys(localStorage).forEach(key => {
-    if (key.startsWith("future_")) {
-      const event = JSON.parse(localStorage.getItem(key));
-      if (event.reminderTime === time) {
-        sendNotification(`Reminder: ${event.content}`);
-      }
-    }
-  });
-}
-
-function sendNotification(message) {
-  if (Notification.permission === "granted") {
-    new Notification(message);
-  }
-}
-
-// Alarm logic with snooze
 function addAlarm() {
   const timeInput = document.getElementById("alarmTime").value;
-  if (!timeInput) return alert("Please select a time.");
-  if (alarms.includes(timeInput)) return alert("Alarm already set.");
-
+  if (!timeInput) {
+    alert("Please select a time for the alarm.");
+    return;
+  }
+  if (alarms.includes(timeInput)) {
+    alert("Alarm already set for this time.");
+    return;
+  }
   alarms.push(timeInput);
   renderAlarms();
   alert(`Alarm set for ${timeInput}`);
@@ -167,14 +186,14 @@ function addAlarm() {
 
 function renderAlarms() {
   const alarmList = document.getElementById("alarmList");
-  alarmList.innerHTML = '';
-  alarms.forEach((time, index) => {
+  alarmList.innerHTML = "";
+  alarms.forEach((time, i) => {
     const li = document.createElement("li");
     li.textContent = time + " ";
     const btn = document.createElement("button");
     btn.textContent = "Remove";
     btn.onclick = () => {
-      alarms.splice(index, 1);
+      alarms.splice(i, 1);
       renderAlarms();
     };
     li.appendChild(btn);
@@ -183,9 +202,9 @@ function renderAlarms() {
 }
 
 function checkAlarms(now) {
-  const time = now.toTimeString().slice(0, 5); // HH:MM
+  const currentTime = now.toTimeString().slice(0, 5); // HH:MM
   alarms.forEach((alarmTime, i) => {
-    if (alarmTime === time) {
+    if (alarmTime === currentTime) {
       showAlarmNotification(alarmTime);
       alarms.splice(i, 1);
       renderAlarms();
@@ -193,11 +212,28 @@ function checkAlarms(now) {
   });
 }
 
-function showAlarmNotification(time) {
+// ---------- Future Events Notification & Alarm ----------
+
+function checkFutureEvents(now) {
+  const currentDate = now.toISOString().slice(0, 10); // YYYY-MM-DD
+  const currentTime = now.toTimeString().slice(0, 5); // HH:MM
+
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith("future_")) {
+      const event = JSON.parse(localStorage.getItem(key));
+      if (event.eventDate === currentDate && event.eventTime === currentTime) {
+        // Trigger notification and alarm sound
+        showFutureEventNotification(event);
+      }
+    }
+  });
+}
+
+function showFutureEventNotification(event) {
   playAlarmSound();
   if (Notification.permission === "granted") {
-    const notification = new Notification("⏰ Alarm!", {
-      body: `It's ${time}`,
+    const notification = new Notification("📅 Event Reminder", {
+      body: event.content + `\nAt ${event.eventTime}`,
       icon: "alarm-icon.png",
       vibrate: [200, 100, 200],
       requireInteraction: true,
@@ -209,8 +245,8 @@ function showAlarmNotification(time) {
       stopAlarmSound();
     };
 
-    notification.addEventListener("action", event => {
-      if (event.action === "snooze") {
+    notification.addEventListener("action", e => {
+      if (e.action === "snooze") {
         notification.close();
         snoozeAlarm(5);
       }
@@ -218,20 +254,20 @@ function showAlarmNotification(time) {
   }
 }
 
+// ---------- Alarm Sound & Snooze ----------
+
 function playAlarmSound() {
   const audio = customAlarmSound || alarmSoundElement;
   if (!audio || !audio.src) {
     console.warn("⚠️ No alarm sound selected.");
     return;
   }
-
   audio.currentTime = 0;
   audio.play().catch(e => console.warn("Sound play error:", e));
-
   clearTimeout(alarmTimeout);
   alarmTimeout = setTimeout(() => {
     stopAlarmSound();
-  }, 15000);
+  }, 15000); // 15 seconds
 }
 
 function stopAlarmSound() {
@@ -252,7 +288,8 @@ function snoozeAlarm(minutes) {
   }, minutes * 60 * 1000);
 }
 
-// Handle user custom audio input
+// ---------- Custom Alarm Sound Input ----------
+
 document.getElementById("customSoundInput").addEventListener("change", function (e) {
   const file = e.target.files[0];
   if (file) {
@@ -263,7 +300,8 @@ document.getElementById("customSoundInput").addEventListener("change", function 
   }
 });
 
-// Startup logic
+// ---------- Initialization ----------
+
 window.onload = function () {
   updateClock();
   setInterval(updateClock, 1000);
