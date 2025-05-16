@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -15,65 +16,69 @@
 <body>
 
   <div class="main-container">
-    
-    <!-- Clock -->
-    <div class="clock-container">
-      <div class="clock">
-        <div id="hours" class="block">00</div>
-        <div class="colon">:</div>
-        <div id="minutes" class="block">00</div>
-        <div class="colon">:</div>
-        <div id="seconds" class="block">00</div>
-      </div>
-    </div>
 
-    <!-- Date -->
-    <div class="date-container">
-      <div class="date" id="dateDisplay">Loading...</div>
-    </div>
+```
+<!-- Clock -->
+<div class="clock-container">
+  <div class="clock">
+    <div id="hours" class="block">00</div>
+    <div class="colon">:</div>
+    <div id="minutes" class="block">00</div>
+    <div class="colon">:</div>
+    <div id="seconds" class="block">00</div>
+  </div>
+</div>
 
-    <!-- Diary Section -->
-    <div class="diary-container">
-      <h2>Diary / Event Reminder</h2>
-      
-      <!-- Shared Notepad -->
-      <textarea id="diaryInput" placeholder="Write your note or event reminder..."></textarea>
-      
-      <!-- Action Buttons -->
-      <div class="diary-buttons">
-        <button onclick="saveNote()">Save Note</button>
-        <button onclick="saveFutureEvent()">Save Future Event</button>
-      </div>
-      <div id="savedStatus"></div>
+<!-- Date -->
+<div class="date-container">
+  <div class="date" id="dateDisplay">Loading...</div>
+</div>
 
-      <hr>
+<!-- Diary Section -->
+<div class="diary-container">
+  <h2>Diary / Event Reminder</h2>
+  
+  <!-- Shared Notepad -->
+  <textarea id="diaryInput" placeholder="Write your note or event reminder..."></textarea>
+  
+  <!-- Action Buttons -->
+  <div class="diary-buttons">
+    <button onclick="saveNote()">Save Note</button>
+    <button onclick="saveFutureEvent()">Save Future Event</button>
+  </div>
+  <div id="savedStatus"></div>
 
-      <!-- View Notes & Events -->
-      <div class="history-controls">
-        <label for="dateFilter"><strong>Filter by date:</strong></label>
-        <input type="date" id="dateFilter" onchange="viewSavedHistory(this.value)">
-        <button onclick="viewSavedHistory()">View All Saved</button>
-      </div>
-      <div id="notesHistory" class="notes-history-container"></div>
-    </div>
-    <div class="alarm-section">
-      <h2>alarm</h2>
-      <input type="time" id="alarmTime" />
-      <button onclick="addAlarm()">Add Alarm</button>
-      <ul id="alarmList"></ul>
-    </div>
-    <label for="customSoundInput">Upload Alarm Sound:</label>
+  <hr>
+
+  <!-- View Notes & Events -->
+  <div class="history-controls">
+    <label for="dateFilter"><strong>Filter by date:</strong></label>
+    <input type="date" id="dateFilter" onchange="viewSavedHistory(this.value)">
+    <button onclick="viewSavedHistory()">View All Saved</button>
+  </div>
+  <div id="notesHistory" class="notes-history-container"></div>
+</div>
+<div class="alarm-section">
+  <h2>alarm</h2>
+  <input type="time" id="alarmTime" />
+  <button onclick="addAlarm()">Add Alarm</button>
+  <ul id="alarmList"></ul>
+</div>
+<label for="customSoundInput">Upload Alarm Sound:</label>
+```
+
 <input type="file" id="customSoundInput" accept="audio/*">
 
 <audio id="alarmSound" preload="auto"></audio>
 
   </div>
-  
 
   <!-- JavaScript -->
+
   <script src="script.js"></script>
 
   <!-- Service Worker -->
+
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
@@ -86,5 +91,7 @@
       Notification.requestPermission();
     }
   </script>
+
 </body>
 </html>
+
