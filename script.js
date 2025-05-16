@@ -1,3 +1,6 @@
+let alarms = [];
+const alarmSound = document.getElementById("alarmSound"); // This assumes <audio id="alarmSound" src="alarm.mp3"></audio>
+
 function updateClock() {
   const now = new Date();
   const hours = now.getHours().toString().padStart(2, "0");
@@ -17,6 +20,7 @@ function updateClock() {
   document.getElementById("dateDisplay").textContent = fullDate;
 
   checkReminders(now);
+  checkAlarms(); // check alarms every second
 }
 
 function animateIfChanged(id, newValue) {
@@ -34,12 +38,9 @@ function saveNote() {
   if (!content) return;
 
   const now = new Date();
-  const savedAt = formatDate(now);  // Day/Month/Year format
+  const savedAt = formatDate(now);
   const key = `note_${Date.now()}`;
-  const note = {
-    content,
-    savedAt
-  };
+  const note = { content, savedAt };
 
   localStorage.setItem(key, JSON.stringify(note));
   document.getElementById("savedStatus").textContent = "📝 Note saved!";
@@ -53,12 +54,12 @@ function saveFutureEvent() {
   const reminderTime = prompt("Enter reminder time (HH:MM):");
 
   if (eventContent && futureDate && reminderTime) {
-    const key = `future_${Date.now()}`; // Unique key for each event
+    const key = `future_${Date.now()}`;
     const futureEvent = {
       content: eventContent,
       futureDate,
       reminderTime,
-      savedAt: formatDate(new Date()) // Save when the event is added
+      savedAt: formatDate(new Date())
     };
 
     localStorage.setItem(key, JSON.stringify(futureEvent));
@@ -69,25 +70,19 @@ function saveFutureEvent() {
 }
 
 function viewSavedHistory(filterDate = null) {
-  const notesHistoryContainer = document.getElementById("notesHistory");
-  notesHistoryContainer.innerHTML = '';
-
+  const container = document.getElementById("notesHistory");
+  container.innerHTML = '';
   const notes = [];
 
   Object.keys(localStorage).forEach(key => {
     const value = JSON.parse(localStorage.getItem(key));
-    
     if (key.startsWith("note_") || key.startsWith("future_")) {
       const [type] = key.split('_');
-      const savedAt = value.savedAt || formatDate(new Date());
-      const futureDate = value.futureDate || '';
-      const reminderTime = value.reminderTime || '';
-
       notes.push({
         type,
-        savedAt,
-        futureDate,
-        reminderTime,
+        savedAt: value.savedAt || formatDate(new Date()),
+        futureDate: value.futureDate || '',
+        reminderTime: value.reminderTime || '',
         content: value.content,
         key
       });
@@ -97,14 +92,14 @@ function viewSavedHistory(filterDate = null) {
   notes.sort((a, b) => new Date(a.savedAt) - new Date(b.savedAt));
 
   if (notes.length === 0) {
-    notesHistoryContainer.innerHTML = '<p>No saved notes or events found.</p>';
+    container.innerHTML = '<p>No saved notes or events found.</p>';
     return;
   }
 
   notes.forEach(note => {
-    const noteElement = document.createElement("div");
-    noteElement.classList.add("note-item");
-    noteElement.innerHTML = `
+    const div = document.createElement("div");
+    div.classList.add("note-item");
+    div.innerHTML = `
       <strong>${note.type === 'future' ? "📅 Future Event" : "📝 Note"}:</strong><br>
       <strong>Saved at: ${note.savedAt}</strong><br>
       <p>${note.content}</p>
@@ -112,7 +107,7 @@ function viewSavedHistory(filterDate = null) {
       <button onclick="deleteNote('${note.key}')">Delete</button>
       <hr>
     `;
-    notesHistoryContainer.appendChild(noteElement);
+    container.appendChild(div);
   });
 }
 
@@ -149,122 +144,53 @@ function sendNotification(content) {
   }
 }
 
-window.onload = function () {
-  updateClock();
-  setInterval(updateClock, 1000);
-  viewSavedHistory();
-  if (Notification.permission !== "granted") {
-    Notification.requestPermission();
-  }
-};
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js').then(reg => {
-      console.log('Service worker registered.', reg);
-    }).catch(err => {
-      console.error('Service worker registration failed:', err);
-    });
-  });
-}
-let alarms = [];
-let alarmSound = new Audio('alarm.mp3'); // Add an alarm.mp3 file in your project folder
-
 function addAlarm() {
-    const timeInput = document.getElementById("alarmTime").value;
-    if (!timeInput) return alert("Please select a time.");
+  const timeInput = document.getElementById("alarmTime").value;
+  if (!timeInput) return alert("Please select a time.");
 
-    if (alarms.includes(timeInput)) {
-        alert("Alarm already set for this time.");
-        return;
-    }
+  if (alarms.includes(timeInput)) {
+    alert("Alarm already set for this time.");
+    return;
+  }
 
-    alarms.push(timeInput);
-    renderAlarms();
-    alert(`Alarm set for ${timeInput}`);
+  alarms.push(timeInput);
+  renderAlarms();
+  alert(`Alarm set for ${timeInput}`);
 }
 
 function renderAlarms() {
-    const alarmList = document.getElementById("alarmList");
-    alarmList.innerHTML = '';
+  const alarmList = document.getElementById("alarmList");
+  alarmList.innerHTML = '';
 
-    alarms.forEach((time, index) => {
-        const li = document.createElement("li");
-        li.textContent = time;
-        const removeBtn = document.createElement("button");
-        removeBtn.textContent = "Remove";
-        removeBtn.onclick = () => {
-            alarms.splice(index, 1);
-            renderAlarms();
-        };
-        li.appendChild(removeBtn);
-        alarmList.appendChild(li);
-    });
+  alarms.forEach((time, index) => {
+    const li = document.createElement("li");
+    li.textContent = time;
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "Remove";
+    removeBtn.onclick = () => {
+      alarms.splice(index, 1);
+      renderAlarms();
+    };
+    li.appendChild(removeBtn);
+    alarmList.appendChild(li);
+  });
 }
 
 function checkAlarms() {
-    const now = new Date();
-    const currentTime = now.toTimeString().slice(0, 5); // HH:MM
-    alarms.forEach((alarmTime, i) => {
-        if (alarmTime === currentTime) {
-            showAlarmNotification(alarmTime);
-            alarmSound.play();
-            alarms.splice(i, 1); // remove after trigger
-            renderAlarms();
-        }
-    });
-}
+  const now = new Date();
+  const currentTime = now.toTimeString().slice(0, 5); // "HH:MM"
 
-// Request notification permission on load
-if ("Notification" in window && Notification.permission !== "granted") {
-  Notification.requestPermission().then((permission) => {
-    if (permission !== "granted") {
-      console.warn("Notification permission denied.");
+  alarms.forEach((alarmTime, i) => {
+    if (alarmTime === currentTime) {
+      showAlarmNotification(alarmTime);
+      alarms.splice(i, 1); // remove after trigger
+      renderAlarms();
     }
   });
 }
 
-// Show alarm notification using browser API
 function showAlarmNotification(time) {
-  if (Notification.permission === "granted") {
-    new Notification("⏰ Alarm!", {
-      body: `It's ${time}`,
-      icon: "alarm-icon.png", // make sure this file exists in root or correct path
-      vibrate: [200, 100, 200], // optional vibration pattern for devices
-    });
-  } else {
-    console.warn("Notification permission not granted.");
-  }
-}
-
-// Call alarm check every 30 seconds
-setInterval(checkAlarms, 30000);
-
-// Logging for function activity tracking
-console.log("🔄 updateClock function called");
-console.log("✨ animateIfChanged function called");
-console.log("💾 saveNote function called");
-console.log("📆 saveFutureEvent function called");
-console.log("📖 viewSavedHistory function called");
-console.log("🗑️ deleteNote function called");
-console.log("📅 formatDate function called");
-console.log("⏰ checkReminders function called");
-console.log("🔔 sendNotification function called");
-console.log("➕ addAlarm function called");
-console.log("🖼️ renderAlarms function called");
-console.log("✅ checkAlarms function called");
-console.log("🚨 showAlarmNotification function called");
-function playAlarmSound() {
-  const audio = document.getElementById("alarmSound");
-  if (audio) {
-    audio.play().catch((e) => {
-      console.warn("Alarm sound failed to play:", e);
-    });
-  }
-}
-
-function showAlarmNotification(time) {
-  playAlarmSound(); // 👈 play sound
+  playAlarmSound(); // 🔊 Play sound
 
   if (Notification.permission === "granted") {
     new Notification("⏰ Alarm!", {
@@ -272,5 +198,35 @@ function showAlarmNotification(time) {
       icon: "alarm-icon.png",
       vibrate: [200, 100, 200],
     });
+  } else {
+    console.warn("Notification permission not granted.");
   }
+}
+
+function playAlarmSound() {
+  if (!alarmSound) return;
+
+  alarmSound.currentTime = 0;
+  alarmSound.play().catch(e => console.warn("Alarm sound failed to play:", e));
+
+  setTimeout(() => {
+    alarmSound.pause();
+    alarmSound.currentTime = 0;
+  }, 15000); // 15 seconds
+}
+
+window.onload = function () {
+  updateClock();
+  setInterval(updateClock, 1000); // Also runs checkAlarms inside
+  viewSavedHistory();
+
+  if ("Notification" in window && Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+};
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(reg => console.log('Service worker registered.', reg))
+    .catch(err => console.error('Service worker registration failed:', err));
 }
