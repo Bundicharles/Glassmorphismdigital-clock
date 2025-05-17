@@ -310,3 +310,49 @@ function showNotification(title, body) {
 window.onload = () => {
   loadAlarms();
 };
+// Register the service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log('Service Worker Registered'))
+      .catch(console.error);
+  });
+}
+
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+// Listen for beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();  // Prevent the default mini-infobar
+  deferredPrompt = e;  // Save the event for later use
+
+  // Show the install button
+  installBtn.style.display = 'block';
+});
+
+// When user clicks the install button
+installBtn.addEventListener('click', () => {
+  if (!deferredPrompt) return;
+
+  deferredPrompt.prompt();  // Show the install prompt
+
+  // Wait for the user's choice
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User accepted the install prompt');
+    } else {
+      console.log('User dismissed the install prompt');
+    }
+    deferredPrompt = null;
+
+    // Hide the install button after prompt
+    installBtn.style.display = 'none';
+  });
+});
+
+// Optional: Detect if app is already installed and hide install button
+window.addEventListener('appinstalled', () => {
+  console.log('PWA was installed');
+  installBtn.style.display = 'none';
+});
