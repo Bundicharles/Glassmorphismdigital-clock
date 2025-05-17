@@ -133,6 +133,26 @@ document.getElementById("customSoundInput").addEventListener("change", function 
 });
 
 // Twinkle effect for 30 seconds
+function startTwinkleEffect() {
+  const clockContainer = document.querySelector(".clock-container");
+  if (!clockContainer) return;
+
+  const colors = ["#00ff66", "#ff0066", "#6600ff", "#ffcc00", "#00ccff"];
+  let i = 0;
+
+  twinkleInterval = setInterval(() => {
+    clockContainer.style.backgroundColor = colors[i];
+    i = (i + 1) % colors.length;
+  }, 500);
+}
+
+function stopTwinkleEffect() {
+  const clockContainer = document.querySelector(".clock-container");
+  if (!clockContainer) return;
+  clearInterval(twinkleInterval);
+  twinkleInterval = null;
+  clockContainer.style.backgroundColor = "";
+}
 
 // Play alarm sound repeatedly for 30 seconds with twinkle effect
 function playAlarmNotification() {
