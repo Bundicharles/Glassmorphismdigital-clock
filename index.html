@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -14,71 +13,70 @@
   <link rel="icon" type="image/png" href="alarm-icon.png" />
 </head>
 <body>
-
   <div class="main-container">
 
-```
-<!-- Clock -->
-<div class="clock-container">
-  <div class="clock">
-    <div id="hours" class="block">00</div>
-    <div class="colon">:</div>
-    <div id="minutes" class="block">00</div>
-    <div class="colon">:</div>
-    <div id="seconds" class="block">00</div>
-  </div>
-</div>
+    <!-- Clock -->
+    <div class="clock-container">
+      <div class="clock">
+        <div id="hours" class="block">00</div>
+        <div class="colon">:</div>
+        <div id="minutes" class="block">00</div>
+        <div class="colon">:</div>
+        <div id="seconds" class="block">00</div>
+      </div>
+    </div>
 
-<!-- Date -->
-<div class="date-container">
-  <div class="date" id="dateDisplay">Loading...</div>
-</div>
+    <!-- Date -->
+    <div class="date-container">
+      <div class="date" id="dateDisplay">Loading...</div>
+    </div>
 
-<!-- Diary Section -->
-<div class="diary-container">
-  <h2>Diary / Event Reminder</h2>
-  
-  <!-- Shared Notepad -->
-  <textarea id="diaryInput" placeholder="Write your note or event reminder..."></textarea>
-  
-  <!-- Action Buttons -->
-  <div class="diary-buttons">
-    <button onclick="saveNote()">Save Note</button>
-    <button onclick="saveFutureEvent()">Save Future Event</button>
-  </div>
-  <div id="savedStatus"></div>
+    <!-- Diary Section -->
+    <div class="diary-container">
+      <h2>Diary / Event Reminder</h2>
+      <textarea id="diaryInput" placeholder="Write your note or event reminder..."></textarea>
 
-  <hr>
+      <!-- Action Buttons -->
+      <div class="diary-buttons">
+        <button onclick="saveNote()">Save Note</button>
+        <button onclick="saveFutureEvent()">Save Future Event</button>
+      </div>
+      <div id="savedStatus"></div>
 
-  <!-- View Notes & Events -->
-  <div class="history-controls">
-    <label for="dateFilter"><strong>Filter by date:</strong></label>
-    <input type="date" id="dateFilter" onchange="viewSavedHistory(this.value)">
-    <button onclick="viewSavedHistory()">View All Saved</button>
-  </div>
-  <div id="notesHistory" class="notes-history-container"></div>
-</div>
-<div class="alarm-section">
-  <h2>alarm</h2>
-  <input type="time" id="alarmTime" />
-  <button onclick="addAlarm()">Add Alarm</button>
-  <ul id="alarmList"></ul>
-</div>
-<label for="customSoundInput">Upload Alarm Sound:</label>
-```
+      <hr>
 
-<input type="file" id="customSoundInput" accept="audio/*">
+      <!-- View All Notes & Events -->
+      <div class="history-controls">
+        <label for="dateFilter"><strong>Filter by date:</strong></label>
+        <input type="date" id="dateFilter" />
+        <button onclick="viewSavedHistory()">View</button>
+      </div>
+      
 
-<audio id="alarmSound" preload="auto"></audio>
+      <!-- Notes History Scrollable Display -->
+      <div id="notesHistory" class="notes-history-container" style="display: none; max-height: 300px; overflow-y: auto;" tabindex="-1">
+        <button onclick="document.getElementById('notesHistory').style.display='none'">Close</button>
+      </div>
+    </div>
 
+    <!-- Alarm Section -->
+    <div class="alarm-section">
+      <h2>Alarm</h2>
+      <input type="time" id="alarmTime" />
+      <button onclick="addAlarm()">Add Alarm</button>
+      <ul id="alarmsList"></ul>
+    </div>
+
+    <!-- Custom Sound Upload -->
+    <label for="customSoundInput">Upload Alarm Sound:</label>
+    <input type="file" id="customSoundInput" accept="audio/*">
+    <audio id="alarmSound" preload="auto"></audio>
   </div>
 
   <!-- JavaScript -->
-
   <script src="script.js"></script>
 
   <!-- Service Worker -->
-
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
@@ -86,12 +84,9 @@
         .catch(err => console.error('Service Worker registration failed:', err));
     }
 
-    // Request Notification Permission
     if ('Notification' in window && Notification.permission !== "granted") {
       Notification.requestPermission();
     }
   </script>
-
 </body>
 </html>
-

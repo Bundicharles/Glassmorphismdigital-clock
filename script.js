@@ -1,165 +1,115 @@
-let alarms = [];
-let alarmTimeout = null;
-let snoozeTimeout = null;
-let customAlarmSound = null;
-const alarmSoundElement = document.getElementById("alarmSound");
-
-// ---------- Clock and Date ----------
+// ---------------------------
+// Clock
+// ---------------------------
 function updateClock() {
   const now = new Date();
-  const hours = now.getHours().toString().padStart(2, "0");
-  const minutes = now.getMinutes().toString().padStart(2, "0");
-  const seconds = now.getSeconds().toString().padStart(2, "0");
+  document.getElementById("hours").textContent = String(now.getHours()).padStart(2, "0");
+  document.getElementById("minutes").textContent = String(now.getMinutes()).padStart(2, "0");
+  document.getElementById("seconds").textContent = String(now.getSeconds()).padStart(2, "0");
 
-  animateIfChanged("hours", hours);
-  animateIfChanged("minutes", minutes);
-  animateIfChanged("seconds", seconds);
-
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const dayName = days[now.getDay()];
-  const date = now.getDate().toString().padStart(2, "0");
-  const month = (now.getMonth() + 1).toString().padStart(2, "0");
-  const year = now.getFullYear();
-  document.getElementById("dateDisplay").textContent = `${date}/${month}/${year} (${dayName})`;
-
-  checkFutureEvents(now);
-  checkAlarms(now);
+  const dateString = now.toISOString().slice(0, 10);
+  document.getElementById("dateDisplay").textContent = dateString;
 }
+setInterval(updateClock, 1000);
+updateClock();
 
-function animateIfChanged(id, newValue) {
-  const el = document.getElementById(id);
-  if (el.textContent !== newValue) {
-    el.classList.remove("animate");
-    void el.offsetWidth;
-    el.textContent = newValue;
-    el.classList.add("animate");
-  }
-}
-
-// ---------- Diary / Future Events ----------
-
-/**
- * Saves either a current note or a future event depending on user input.
- * Future events require a date and time; notes do not.
- */
-function saveEntry() {
+// ---------------------------
+// Save Note
+// ---------------------------
+function saveNote() {
   const content = document.getElementById("diaryInput").value.trim();
-  if (!content) {
-    alert("Please enter some text.");
-    return;
-  }
+  if (!content) return alert("Please write a note.");
 
-  // Ask user if this is a future event or a current note
-  const isFuture = confirm("Save as a future event? (OK for yes, Cancel for no)");
+  const savedAt = new Date().toISOString().slice(0, 10);
+  const key = `note_${Date.now()}`;
+  const note = { content, savedAt };
 
-  if (isFuture) {
-    // For future event, get date and time
-    let eventDate = prompt("Enter event date (YYYY-MM-DD):");
-    if (!eventDate || !isValidDate(eventDate)) {
-      alert("Invalid or missing date.");
-      return;
-    }
-
-    let eventTime = prompt("Enter event time (HH:MM, 24-hour):");
-    if (!eventTime || !isValidTime(eventTime)) {
-      alert("Invalid or missing time.");
-      return;
-    }
-
-    // Save future event
-    const key = `future_${Date.now()}`;
-    const event = {
-      content,
-      eventDate,  // in YYYY-MM-DD
-      eventTime,  // in HH:MM
-      savedAt: new Date().toISOString()
-    };
-    localStorage.setItem(key, JSON.stringify(event));
-    alert(`Future event saved for ${eventDate} at ${eventTime}.`);
-  } else {
-    // Save current note with today's date
-    const now = new Date();
-    const key = `note_${Date.now()}`;
-    const note = {
-      content,
-      savedAt: now.toISOString().slice(0, 10)  // YYYY-MM-DD
-    };
-    localStorage.setItem(key, JSON.stringify(note));
-    alert("Note saved for today.");
-  }
-
+  localStorage.setItem(key, JSON.stringify(note));
+  showSavedMessage("Note saved successfully!");
   document.getElementById("diaryInput").value = "";
-  viewSavedHistory();
 }
 
-// Helper: Validate date in YYYY-MM-DD
+// ---------------------------
+// Save Future Event
+// ---------------------------
+function saveFutureEvent() {
+  const content = document.getElementById("diaryInput").value.trim();
+  if (!content) return alert("Please write a future event.");
+
+  const eventDate = prompt("Enter event date (YYYY-MM-DD):");
+  if (!eventDate || !isValidDate(eventDate)) return alert("Invalid date.");
+
+  const eventTime = prompt("Enter event time (HH:MM):");
+  if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(eventTime)) return alert("Invalid time.");
+
+  const key = `future_${Date.now()}`;
+  const eventObj = { content, eventDate, eventTime };
+
+  localStorage.setItem(key, JSON.stringify(eventObj));
+  showSavedMessage("Future event saved successfully!");
+  document.getElementById("diaryInput").value = "";
+}
+
+function showSavedMessage(msg) {
+  const status = document.getElementById("savedStatus");
+  status.textContent = msg;
+  setTimeout(() => status.textContent = "", 3000);
+}
+
 function isValidDate(dateString) {
-  const reg = /^\d{4}-\d{2}-\d{2}$/;
-  if (!reg.test(dateString)) return false;
-  const d = new Date(dateString);
-  return d instanceof Date && !isNaN(d);
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateString) && !isNaN(new Date(dateString));
 }
 
-// Helper: Validate time in HH:MM 24h
-function isValidTime(timeString) {
-  const reg = /^([01]\d|2[0-3]):([0-5]\d)$/;
-  return reg.test(timeString);
-}
-
-// View saved entries for selected date (notes + future events)
+// ---------------------------
+// View All Notes and Events by Date Filter
+// ---------------------------
 function viewSavedHistory() {
-  const dateFilter = document.getElementById("dateFilter").value; // YYYY-MM-DD or empty
-  const container = document.getElementById("notesHistory");
-  container.innerHTML = "";
-
-  if (!dateFilter) {
-    container.innerHTML = "<p>Please select a date to view saved notes and events.</p>";
+  const date = document.getElementById("dateFilter").value;
+  if (!date || !isValidDate(date)) {
+    alert("Please select a valid date to view history.");
     return;
   }
 
-  let found = false;
+  const container = document.getElementById("notesHistory");
+  container.style.display = "block";
+  container.innerHTML = `<button onclick="document.getElementById('notesHistory').style.display='none'">Close</button>`;
+
+  let foundAny = false;
 
   Object.keys(localStorage).forEach(key => {
     if (key.startsWith("note_") || key.startsWith("future_")) {
-      const entry = JSON.parse(localStorage.getItem(key));
-      
-      // For notes, savedAt is date; for future events, eventDate is the event date
-      const entryDate = key.startsWith("note_") ? entry.savedAt : entry.eventDate;
+      try {
+        const entry = JSON.parse(localStorage.getItem(key));
+        let entryDate = key.startsWith("note_") ? entry.savedAt : entry.eventDate;
+        if (entryDate === date) {
+          foundAny = true;
+          const div = document.createElement("div");
+          div.classList.add("note-item");
+          div.style.padding = "10px";
+          div.style.borderBottom = "1px solid #ccc";
+          div.style.marginBottom = "10px";
 
-      if (entryDate === dateFilter) {
-        found = true;
-        const div = document.createElement("div");
-        div.classList.add("note-item");
-
-        if (key.startsWith("note_")) {
           div.innerHTML = `
-            <strong>📝 Note</strong><br>
+            <strong>${key.startsWith("note_") ? "📝 Note" : "📅 Future Event"}</strong><br>
             <p>${entry.content}</p>
-            <small>Saved At: ${entry.savedAt}</small><br>
+            <small>
+              ${key.startsWith("note_") ? `Saved At: ${entry.savedAt}` : `Event Date: ${entry.eventDate} ${entry.eventTime}`}
+            </small><br>
             <button onclick="deleteEntry('${key}')">Delete</button>
-            <hr>
           `;
-        } else {
-          div.innerHTML = `
-            <strong>📅 Future Event</strong><br>
-            <p>${entry.content}</p>
-            <small>Event Date: ${entry.eventDate} ${entry.eventTime}</small><br>
-            <button onclick="deleteEntry('${key}')">Delete</button>
-            <hr>
-          `;
+          container.appendChild(div);
         }
-
-        container.appendChild(div);
+      } catch (e) {
+        console.error(`Error parsing item for key ${key}:`, e);
       }
     }
   });
 
-  if (!found) {
-    container.innerHTML = "<p>No notes or future events found for this date.</p>";
+  if (!foundAny) {
+    container.innerHTML += `<p>No notes or future events found for ${date}.</p>`;
   }
 }
 
-// Delete a note or event by key
 function deleteEntry(key) {
   if (confirm("Delete this entry?")) {
     localStorage.removeItem(key);
@@ -167,143 +117,176 @@ function deleteEntry(key) {
   }
 }
 
-// ---------- Alarm Logic (including snooze) ----------
+// ---------------------------
+// Alarm Sound Upload & Control
+// ---------------------------
+const alarmSound = document.getElementById("alarmSound");
+let twinkleInterval = null;
+let alarmTimeouts = [];
 
-function addAlarm() {
-  const timeInput = document.getElementById("alarmTime").value;
-  if (!timeInput) {
-    alert("Please select a time for the alarm.");
-    return;
-  }
-  if (alarms.includes(timeInput)) {
-    alert("Alarm already set for this time.");
-    return;
-  }
-  alarms.push(timeInput);
-  renderAlarms();
-  alert(`Alarm set for ${timeInput}`);
-}
-
-function renderAlarms() {
-  const alarmList = document.getElementById("alarmList");
-  alarmList.innerHTML = "";
-  alarms.forEach((time, i) => {
-    const li = document.createElement("li");
-    li.textContent = time + " ";
-    const btn = document.createElement("button");
-    btn.textContent = "Remove";
-    btn.onclick = () => {
-      alarms.splice(i, 1);
-      renderAlarms();
-    };
-    li.appendChild(btn);
-    alarmList.appendChild(li);
-  });
-}
-
-function checkAlarms(now) {
-  const currentTime = now.toTimeString().slice(0, 5); // HH:MM
-  alarms.forEach((alarmTime, i) => {
-    if (alarmTime === currentTime) {
-      showAlarmNotification(alarmTime);
-      alarms.splice(i, 1);
-      renderAlarms();
-    }
-  });
-}
-
-// ---------- Future Events Notification & Alarm ----------
-
-function checkFutureEvents(now) {
-  const currentDate = now.toISOString().slice(0, 10); // YYYY-MM-DD
-  const currentTime = now.toTimeString().slice(0, 5); // HH:MM
-
-  Object.keys(localStorage).forEach(key => {
-    if (key.startsWith("future_")) {
-      const event = JSON.parse(localStorage.getItem(key));
-      if (event.eventDate === currentDate && event.eventTime === currentTime) {
-        // Trigger notification and alarm sound
-        showFutureEventNotification(event);
-      }
-    }
-  });
-}
-
-function showFutureEventNotification(event) {
-  playAlarmSound();
-  if (Notification.permission === "granted") {
-    const notification = new Notification("📅 Event Reminder", {
-      body: event.content + `\nAt ${event.eventTime}`,
-      icon: "alarm-icon.png",
-      vibrate: [200, 100, 200],
-      requireInteraction: true,
-      actions: [{ action: "snooze", title: "Snooze 5 min" }]
-    });
-
-    notification.onclick = () => {
-      notification.close();
-      stopAlarmSound();
-    };
-
-    notification.addEventListener("action", e => {
-      if (e.action === "snooze") {
-        notification.close();
-        snoozeAlarm(5);
-      }
-    });
-  }
-}
-
-// ---------- Alarm Sound & Snooze ----------
-
-function playAlarmSound() {
-  const audio = customAlarmSound || alarmSoundElement;
-  if (!audio || !audio.src) {
-    console.warn("⚠️ No alarm sound selected.");
-    return;
-  }
-  audio.currentTime = 0;
-  audio.play().catch(e => console.warn("Sound play error:", e));
-  clearTimeout(alarmTimeout);
-  alarmTimeout = setTimeout(() => {
-    stopAlarmSound();
-  }, 15000); // 15 seconds
-}
-
-function stopAlarmSound() {
-  const audio = customAlarmSound || alarmSoundElement;
-  if (audio) {
-    audio.pause();
-    audio.currentTime = 0;
-  }
-  clearTimeout(alarmTimeout);
-  clearTimeout(snoozeTimeout);
-}
-
-function snoozeAlarm(minutes) {
-  stopAlarmSound();
-  console.log(`💤 Alarm snoozed for ${minutes} minutes.`);
-  snoozeTimeout = setTimeout(() => {
-    playAlarmSound();
-  }, minutes * 60 * 1000);
-}
-
-// ---------- Custom Alarm Sound Input ----------
-
-document.getElementById("customSoundInput").addEventListener("change", function (e) {
-  const file = e.target.files[0];
+document.getElementById("customSoundInput").addEventListener("change", function (event) {
+  const file = event.target.files[0];
   if (file) {
-    const url = URL.createObjectURL(file);
-    alarmSoundElement.src = url;
-    customAlarmSound = alarmSoundElement;
-    console.log("🔊 Custom alarm sound loaded.");
+    const fileURL = URL.createObjectURL(file);
+    alarmSound.src = fileURL;
   }
 });
 
-// ---------- Initialization ----------
+// Twinkle effect for 30 seconds
 
-window.onload = function () {
-  updateClock();
-  setInterval(updateClock, 1000);
-  viewSavedHistory();
+// Play alarm sound repeatedly for 30 seconds with twinkle effect
+function playAlarmNotification() {
+  if (!alarmSound.src) {
+    alert("Please upload a custom alarm sound!");
+    return;
+  }
+
+  alarmSound.currentTime = 0;
+  alarmSound.play();
+
+  const duration = 30000; // 30 seconds
+  const repeatInterval = alarmSound.duration * 1000 || 3000;
+
+  let elapsed = 0;
+
+  function repeatSound() {
+    if (elapsed < duration) {
+      alarmSound.currentTime = 0;
+      alarmSound.play();
+      elapsed += repeatInterval;
+      const timeoutId = setTimeout(repeatSound, repeatInterval);
+      alarmTimeouts.push(timeoutId);
+    }
+  }
+
+  repeatSound();
+  startTwinkleEffect();
+
+  setTimeout(() => {
+    alarmSound.pause();
+    stopTwinkleEffect();
+    alarmTimeouts.forEach(clearTimeout);
+    alarmTimeouts = [];
+  }, duration);
+}
+
+// ---------------------------
+// Alarms (Regular and Future Events)
+// ---------------------------
+let alarms = [];
+
+function addAlarm() {
+  const alarmTime = document.getElementById("alarmTime").value;
+  if (!alarmTime) return alert("Select a valid alarm time.");
+
+  alarms.push(alarmTime);
+  localStorage.setItem("alarms", JSON.stringify(alarms));
+  alert(`Alarm set for ${alarmTime}`);
+  document.getElementById("alarmTime").value = "";
+  renderAlarms();
+  scheduleAlarms();
+}
+
+function renderAlarms() {
+  const list = document.getElementById("alarmsList");
+  list.innerHTML = "";
+  alarms.forEach((time, index) => {
+    const li = document.createElement("li");
+    li.textContent = time + " ";
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "Delete";
+    delBtn.onclick = () => {
+      alarms.splice(index, 1);
+      localStorage.setItem("alarms", JSON.stringify(alarms));
+      renderAlarms();
+      scheduleAlarms();
+    };
+    li.appendChild(delBtn);
+    list.appendChild(li);
+  });
+}
+
+function loadAlarms() {
+  const saved = localStorage.getItem("alarms");
+  if (saved) alarms = JSON.parse(saved);
+  renderAlarms();
+  scheduleAlarms();
+}
+
+function scheduleAlarms() {
+  alarmTimeouts.forEach(t => clearTimeout(t));
+  alarmTimeouts = [];
+
+  const now = new Date();
+
+  // Schedule regular alarms
+  alarms.forEach(timeStr => {
+    const [hour, minute] = timeStr.split(":").map(Number);
+    const alarmDate = new Date();
+    alarmDate.setHours(hour, minute, 0, 0);
+    if (alarmDate < now) alarmDate.setDate(alarmDate.getDate() + 1);
+
+    const timeout = alarmDate.getTime() - now.getTime();
+    const id = setTimeout(() => {
+      playAlarmNotification();
+      showNotification("Alarm", `Alarm ringing for ${timeStr}`);
+    }, timeout);
+
+    alarmTimeouts.push(id);
+  });
+
+  // Schedule future event alarms
+  scheduleFutureEventAlarms();
+}
+
+function scheduleFutureEventAlarms() {
+  const now = new Date();
+
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith("future_")) {
+      try {
+        const event = JSON.parse(localStorage.getItem(key));
+        if (!event.eventDate || !event.eventTime) return;
+
+        const [hour, minute] = event.eventTime.split(":").map(Number);
+        const eventDateTime = new Date(event.eventDate);
+        eventDateTime.setHours(hour, minute, 0, 0);
+
+        if (eventDateTime < now) return; // Skip past events
+
+        const timeout = eventDateTime.getTime() - now.getTime();
+
+        const timeoutId = setTimeout(() => {
+          playAlarmNotification();
+          showNotification("Event Reminder", `Event: ${event.content} at ${event.eventTime}`);
+        }, timeout);
+
+        alarmTimeouts.push(timeoutId);
+      } catch (e) {
+        console.error("Error scheduling future event alarm:", e);
+      }
+    }
+  });
+}
+
+// ---------------------------
+// Notifications Permission Request
+// ---------------------------
+if ("Notification" in window) {
+  if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+    Notification.requestPermission();
+  }
+}
+
+function showNotification(title, body) {
+  if (Notification.permission === "granted") {
+    new Notification(title, { body });
+  }
+}
+
+// ---------------------------
+// Initialize on page load
+// ---------------------------
+window.onload = () => {
+  loadAlarms();
 };

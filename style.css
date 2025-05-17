@@ -64,7 +64,7 @@ body {
 }
 
 #dateDisplay {
-    background: #000;
+    background: #0a0a2a;
     padding: 0.5em 1em;
     border-radius: 12px;
     font-size: 1.2rem;
@@ -76,7 +76,7 @@ body {
 /* Diary Section */
 .diary-container h2 {
     margin-top: 1.5rem;
-    color: #171557;
+    color: #00fc15;
 }
 
 textarea {
@@ -87,19 +87,19 @@ textarea {
     border: none;
     resize: none;
     font-size: 1rem;
-    background: #03527c;
-    color: #00ff66;
+    background: #0a0a2a;
+    color: #ffffff;
     margin-bottom: 0.5rem;
 }
 
 textarea::placeholder {
-    color: #00fc2a;
+    color: #ffffff;
 }
 
 /* Buttons */
 button {
     padding: 0.5rem 1.2rem;
-    background: #222;
+    background: #0a0a2a;
     color: #00ffcc;
     border: none;
     border-radius: 8px;
@@ -134,7 +134,7 @@ button:hover {
     padding: 0.4rem;
     border-radius: 6px;
     border: none;
-    background: #031cfc;
+    background: #0a0a2a;
     color: #00ffcc;
 }
 
@@ -149,7 +149,7 @@ button:hover {
 }
 
 .note-item {
-    background: #2b2b2b;
+    background: #0a0a2a;
     padding: 0.8rem;
     border-left: 5px solid #00ffcc;
     border-radius: 10px;
@@ -204,7 +204,7 @@ button:hover {
 /* Reminder Style */
 .reminder-item {
     background: #1f1f1f;
-    color: #00ffcc;
+    color: #0a0a2a;
     padding: 0.8rem;
     border-left: 5px solid #00ffaa;
     border-radius: 10px;
@@ -222,4 +222,21 @@ button:hover {
     font-weight: bold;
     font-size: 1rem;
     box-shadow: inset 2px 2px 5px #000000, inset -2px -2px 5px #1a1a1a;
+}
+
+/* ======================= */
+/* Glow/Twinkle Animation  */
+/* ======================= */
+
+@keyframes twinkle {
+    0%, 100% {
+        filter: brightness(1.2) drop-shadow(0 0 5px #00ff99);
+    }
+    50% {
+        filter: brightness(2.5) drop-shadow(0 0 20px #00ffcc);
+    }
+}
+
+.glow-twinkle {
+    animation: twinkle 1s infinite;
 }
