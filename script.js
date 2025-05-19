@@ -69,7 +69,6 @@ function viewSavedHistory() {
     alert("Please select a valid date to view history.");
     return;
   }
-
   const container = document.getElementById("notesHistory");
   container.style.display = "block";
   container.innerHTML = `<button onclick="document.getElementById('notesHistory').style.display='none'">Close</button>`;
