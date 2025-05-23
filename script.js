@@ -3,13 +3,31 @@
 // ---------------------------
 function updateClock() {
   const now = new Date();
-  document.getElementById("hours").textContent = String(now.getHours()).padStart(2, "0");
-  document.getElementById("minutes").textContent = String(now.getMinutes()).padStart(2, "0");
-  document.getElementById("seconds").textContent = String(now.getSeconds()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
 
-  const dateString = now.toISOString().slice(0, 10);
+  document.getElementById("hours").textContent = hours;
+  document.getElementById("minutes").textContent = minutes;
+  document.getElementById("seconds").textContent = seconds;
+
+  const dateString = formatDate(now);
   document.getElementById("dateDisplay").textContent = dateString;
 }
+
+function formatDate(date) {
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+function parseDate(dateString) {
+  const [day, month, year] = dateString.split("/").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 setInterval(updateClock, 1000);
 updateClock();
 
@@ -20,7 +38,7 @@ function saveNote() {
   const content = document.getElementById("diaryInput").value.trim();
   if (!content) return alert("Please write a note.");
 
-  const savedAt = new Date().toISOString().slice(0, 10);
+  const savedAt = formatDate(new Date());
   const key = `note_${Date.now()}`;
   const note = { content, savedAt };
 
@@ -36,7 +54,7 @@ function saveFutureEvent() {
   const content = document.getElementById("diaryInput").value.trim();
   if (!content) return alert("Please write a future event.");
 
-  const eventDate = prompt("Enter event date (YYYY-MM-DD):");
+  const eventDate = prompt("Enter event date (DD/MM/YYYY):");
   if (!eventDate || !isValidDate(eventDate)) return alert("Invalid date.");
 
   const eventTime = prompt("Enter event time (HH:MM):");
@@ -57,18 +75,34 @@ function showSavedMessage(msg) {
 }
 
 function isValidDate(dateString) {
-  return /^\d{4}-\d{2}-\d{2}$/.test(dateString) && !isNaN(new Date(dateString));
+  const regex = /^\d{2}\/\d{2}\/\d{4}$/;
+  if (!regex.test(dateString)) return false;
+  const [d, m, y] = dateString.split("/").map(Number);
+  const date = new Date(y, m - 1, d);
+  return date && date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
 }
 
 // ---------------------------
-// View All Notes and Events by Date Filter
+// View Saved Notes/Events
 // ---------------------------
 function viewSavedHistory() {
-  const date = document.getElementById("dateFilter").value;
-  if (!date || !isValidDate(date)) {
-    alert("Please select a valid date to view history.");
+  const rawDate = document.getElementById("dateFilter").value;
+
+  // Convert from YYYY-MM-DD to DD/MM/YYYY
+  if (!rawDate) {
+    alert("Please select a date.");
     return;
   }
+
+  const [year, month, day] = rawDate.split("-");
+  const date = `${day}/${month}/${year}`;
+
+  if (!isValidDate(date)) {
+    alert("Invalid date format.");
+    return;
+  }
+
+  // Proceed using the converted `date` in DD/MM/YYYY format
   const container = document.getElementById("notesHistory");
   container.style.display = "block";
   container.innerHTML = `<button onclick="document.getElementById('notesHistory').style.display='none'">Close</button>`;
@@ -79,7 +113,7 @@ function viewSavedHistory() {
     if (key.startsWith("note_") || key.startsWith("future_")) {
       try {
         const entry = JSON.parse(localStorage.getItem(key));
-        let entryDate = key.startsWith("note_") ? entry.savedAt : entry.eventDate;
+        const entryDate = key.startsWith("note_") ? entry.savedAt : entry.eventDate;
         if (entryDate === date) {
           foundAny = true;
           const div = document.createElement("div");
@@ -131,7 +165,6 @@ document.getElementById("customSoundInput").addEventListener("change", function 
   }
 });
 
-// Twinkle effect for 30 seconds
 function startTwinkleEffect() {
   const clockContainer = document.querySelector(".clock-container");
   if (!clockContainer) return;
@@ -153,7 +186,6 @@ function stopTwinkleEffect() {
   clockContainer.style.backgroundColor = "";
 }
 
-// Play alarm sound repeatedly for 30 seconds with twinkle effect
 function playAlarmNotification() {
   if (!alarmSound.src) {
     alert("Please upload a custom alarm sound!");
@@ -163,7 +195,7 @@ function playAlarmNotification() {
   alarmSound.currentTime = 0;
   alarmSound.play();
 
-  const duration = 30000; // 30 seconds
+  const duration = 30000;
   const repeatInterval = alarmSound.duration * 1000 || 3000;
 
   let elapsed = 0;
@@ -193,6 +225,7 @@ function playAlarmNotification() {
 // Alarms (Regular and Future Events)
 // ---------------------------
 let alarms = [];
+let triggeredEventKeys = new Set();
 
 function addAlarm() {
   const alarmTime = document.getElementById("alarmTime").value;
@@ -238,7 +271,6 @@ function scheduleAlarms() {
 
   const now = new Date();
 
-  // Schedule regular alarms
   alarms.forEach(timeStr => {
     const [hour, minute] = timeStr.split(":").map(Number);
     const alarmDate = new Date();
@@ -253,43 +285,45 @@ function scheduleAlarms() {
 
     alarmTimeouts.push(id);
   });
-
-  // Schedule future event alarms
-  scheduleFutureEventAlarms();
-}
-
-function scheduleFutureEventAlarms() {
-  const now = new Date();
-
-  Object.keys(localStorage).forEach(key => {
-    if (key.startsWith("future_")) {
-      try {
-        const event = JSON.parse(localStorage.getItem(key));
-        if (!event.eventDate || !event.eventTime) return;
-
-        const [hour, minute] = event.eventTime.split(":").map(Number);
-        const eventDateTime = new Date(event.eventDate);
-        eventDateTime.setHours(hour, minute, 0, 0);
-
-        if (eventDateTime < now) return; // Skip past events
-
-        const timeout = eventDateTime.getTime() - now.getTime();
-
-        const timeoutId = setTimeout(() => {
-          playAlarmNotification();
-          showNotification("Event Reminder", `Event: ${event.content} at ${event.eventTime}`);
-        }, timeout);
-
-        alarmTimeouts.push(timeoutId);
-      } catch (e) {
-        console.error("Error scheduling future event alarm:", e);
-      }
-    }
-  });
 }
 
 // ---------------------------
-// Notifications Permission Request
+// Future Event Alarm Checker
+// ---------------------------
+function scheduleFutureEventAlarms() {
+  setInterval(() => {
+    const now = new Date();
+
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith("future_") && !triggeredEventKeys.has(key)) {
+        try {
+          const event = JSON.parse(localStorage.getItem(key));
+          if (!event.eventDate || !event.eventTime) return;
+
+          const [hour, minute] = event.eventTime.split(":").map(Number);
+          const [day, month, year] = event.eventDate.split("/").map(Number);
+
+          const eventDateTime = new Date();
+          eventDateTime.setFullYear(year, month - 1, day);
+          eventDateTime.setHours(hour, minute, 0, 0);
+
+          const diff = eventDateTime - now;
+
+          if (diff >= 0 && diff <= 60000) {
+            triggeredEventKeys.add(key);
+            playAlarmNotification();
+            showNotification("⏰ Future Event Reminder", `Event: "${event.content}" at ${event.eventTime}`);
+          }
+        } catch (e) {
+          console.error("Error parsing future event:", e);
+        }
+      }
+    });
+  }, 10000);
+}
+
+// ---------------------------
+// Notifications
 // ---------------------------
 if ("Notification" in window) {
   if (Notification.permission !== "granted" && Notification.permission !== "denied") {
@@ -304,12 +338,8 @@ function showNotification(title, body) {
 }
 
 // ---------------------------
-// Initialize on page load
+// Service Worker & PWA Install
 // ---------------------------
-window.onload = () => {
-  loadAlarms();
-};
-// Register the service worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
@@ -321,22 +351,16 @@ if ('serviceWorker' in navigator) {
 let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
 
-// Listen for beforeinstallprompt event
 window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();  // Prevent the default mini-infobar
-  deferredPrompt = e;  // Save the event for later use
-
-  // Show the install button
+  e.preventDefault();
+  deferredPrompt = e;
   installBtn.style.display = 'block';
 });
 
-// When user clicks the install button
 installBtn.addEventListener('click', () => {
   if (!deferredPrompt) return;
 
-  deferredPrompt.prompt();  // Show the install prompt
-
-  // Wait for the user's choice
+  deferredPrompt.prompt();
   deferredPrompt.userChoice.then((choiceResult) => {
     if (choiceResult.outcome === 'accepted') {
       console.log('User accepted the install prompt');
@@ -344,14 +368,19 @@ installBtn.addEventListener('click', () => {
       console.log('User dismissed the install prompt');
     }
     deferredPrompt = null;
-
-    // Hide the install button after prompt
     installBtn.style.display = 'none';
   });
 });
 
-// Optional: Detect if app is already installed and hide install button
 window.addEventListener('appinstalled', () => {
   console.log('PWA was installed');
   installBtn.style.display = 'none';
 });
+
+// ---------------------------
+// Initialize
+// ---------------------------
+window.onload = () => {
+  loadAlarms();
+  scheduleFutureEventAlarms();
+};
